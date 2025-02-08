@@ -1,14 +1,15 @@
-import { fetchPodcastFeed } from "./lib/podcast";
+// import { fetchPodcastFeed } from "./lib/podcast";
 import { SparklesPreview } from "./ui/title";
+import { EpisodeCards } from "./ui/episodeCard";
 
 const PodcastPage = async () => {
   // Fetch the podcast feed and episodes
-  const { title, description, episodes } = await fetchPodcastFeed();
+  // const { title, description, episodes } = await fetchPodcastFeed();
 
   return (
     <div>
       <SparklesPreview />
-      <h1>{title}</h1>
+      {/* <h1>{title}</h1>
       <p>{description}</p>
       <ul>
         {episodes.length > 0 ? (
@@ -24,7 +25,8 @@ const PodcastPage = async () => {
         ) : (
           <p>No episodes available at the moment.</p>
         )}
-      </ul>
+      </ul> */}
+      <EpisodeCards />
     </div>
   );
 };
