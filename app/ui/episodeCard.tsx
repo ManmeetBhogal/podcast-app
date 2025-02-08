@@ -1,6 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, JSX } from "react";
 import { fetchPodcastFeed } from "../lib/podcast";
+// import { cn } from "@/lib/utils";
+import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+// import {
+//     IconArrowWaveRightUp,
+//     IconBoxAlignRightFilled,
+//     IconBoxAlignTopLeft,
+//     IconClipboardCopy,
+//     IconFileBroken,
+//     IconSignature,
+//     IconTableColumn,
+// } from "@tabler/icons-react";
 
 export async function getEpisodeData() {
     const { episodes } = await fetchPodcastFeed();
@@ -9,33 +20,48 @@ export async function getEpisodeData() {
 
 
 export function EpisodeCards() {
-    const [episodes, setEpisodes] = useState<{ title: string | undefined; description: string | undefined; url: string | undefined; }[]>([]);
+    // const [episodes, setEpisodes] = useState<{ title: string | undefined; description: string | undefined; url: string | undefined; }[]>([]);
+
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         const episodesData = await getEpisodeData();
+    //         setEpisodes(episodesData);
+    //     }
+    //     fetchData();
+    // }, []);
+
+    const [items, setItems] = useState<{ title: string | undefined; description: string | undefined; header: JSX.Element; }[]>([]);
 
     useEffect(() => {
-        async function fetchData() {
-            const episodesData = await getEpisodeData();
-            setEpisodes(episodesData);
+        async function fetchItems() {
+            const episodes = await getEpisodeData();
+            const items = episodes.map((episode) => ({
+                title: episode.title,
+                description: episode.description,
+                header: <Skeleton />,
+                // icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />, // Replace with appropriate icon
+            }));
+            setItems(items);
         }
-        fetchData();
+        fetchItems();
     }, []);
 
     return (
-        <div className="container mx-auto px-4">
-            {episodes.length > 0 ? (
-                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {episodes.map((episode, index) => (
-                        <li key={index} className="bg-white shadow-md rounded-lg p-4">
-                            <h2 className="text-xl font-bold mb-2">{episode.title}</h2>
-                            <p className="text-gray-700 line-clamp-2">{episode.description}</p>
-                            <a href={episode.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                Listen to Episode
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No episodes available at the moment.</p>
-            )}
+        <div>
+            <BentoGrid className="max-w-5xl mx-auto">
+                {items.map((item, i) => (
+                    <BentoGridItem
+                        key={i}
+                        title={item.title}
+                        description={<span className="line-clamp-3">{item.description}</span>}
+                        className={"md:col-span-1 lg:col-span-1"}
+                    />
+                ))}
+            </BentoGrid>
         </div>
     );
 }
+
+const Skeleton = () => (
+    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+  );
