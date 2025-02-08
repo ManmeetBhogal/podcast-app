@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { fetchPodcastFeed } from "./lib/podcast";
 
 const PodcastPage = async () => {
