@@ -1,4 +1,5 @@
 import { fetchPodcastFeed } from "./lib/podcast";
+import { SparklesPreview } from "./ui/title";
 
 const PodcastPage = async () => {
   // Fetch the podcast feed and episodes
@@ -6,6 +7,7 @@ const PodcastPage = async () => {
 
   return (
     <div>
+      <SparklesPreview />
       <h1>{title}</h1>
       <p>{description}</p>
       <ul>
