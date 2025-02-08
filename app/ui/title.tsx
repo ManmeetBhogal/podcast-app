@@ -1,8 +1,27 @@
 "use client";
+// import React, { useEffect, useState } from "react";
 import React from "react";
 import { SparklesCore } from "../../components/ui/sparkles";
+import { fetchPodcastFeed } from "../lib/podcast";
+
+export async function getPodcastData() {
+  const podcastData = await fetchPodcastFeed();
+  console.log(podcastData.description);
+  return podcastData;
+}
 
 export function SparklesPreview() {
+
+  // const [description, setDescription] = useState("");
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const data = await getPodcastData();
+  //     setDescription(data.description ?? "");
+  //   }
+  //   fetchData();
+  // }, []);
+
   return (
     <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
       <h1 className="md:text-7xl text-3xl lg:text-6xl font-bold text-center text-white relative z-20">
