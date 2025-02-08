@@ -35,12 +35,14 @@ export function EpisodeCards() {
     useEffect(() => {
         async function fetchItems() {
             const episodes = await getEpisodeData();
+            console.log(episodes); // log fetched episodes
             const items = episodes.map((episode) => ({
                 title: episode.title,
                 description: episode.description,
                 header: <Skeleton />,
                 // icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />, // Replace with appropriate icon
             }));
+            console.log(items); // log mapped items
             setItems(items);
         }
         fetchItems();
