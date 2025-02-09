@@ -7,25 +7,29 @@ export async function fetchPodcastFeed() {
     try {
 
         // environment variable for RSS Feed Url
-        const podcastUrl = process.env.NEXT_PUBLIC_PODCAST_RSS_URL;
+        const podcastUrl = process.env.PODCAST_RSS_URL;
+        console.log("PODCAST RSS URL from env:", process.env.PODCAST_RSS_URL);
+
         if (!podcastUrl) {
             throw new Error('Podcast RSS URL is not defined in environment variables');
         }
         // try to fetch podcast feed
         const feed = await parser.parseURL(podcastUrl);
+        console.log("Fetched Podcast Feed:", feed); // log the full feed response
         
-        // if fetching the feed works, fetch the episodes
+        
+        // if fetching the feed works, map the episodes
         const podcastEpisodes = feed.items.map(item => {
             return {
-                title: item.title, // episode title
-                description: item.contentSnippet, //episode description
-                url: item.link, // episode URL
+                title: item.title || "No title available",
+                description: item.contentSnippet || "No description available",
+                url: item.link || "#",
             };
         });
 
         return {
-            title: feed.title,
-            description: feed.description,
+            title: feed.title || "No title available",
+            description: feed.description || "No description available",
             episodes: podcastEpisodes,
         };
 
