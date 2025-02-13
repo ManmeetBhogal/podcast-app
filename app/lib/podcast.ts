@@ -15,7 +15,7 @@ export async function fetchPodcastFeed() {
         }
         // try to fetch podcast feed
         const feed = await parser.parseURL(podcastUrl);
-        console.log("Fetched Podcast Feed:", feed); // log the full feed response
+        // console.log("Fetched Podcast Feed:", feed); // log the full feed response
         
         
         // if fetching the feed works, map the episodes
@@ -23,7 +23,8 @@ export async function fetchPodcastFeed() {
             return {
                 title: item.title || "No title available",
                 description: item.contentSnippet || "No description available",
-                url: item.link || "#",
+                pubDate: item.pubDate || "No publish date available",
+                url: item.enclosure?.url || "#",
             };
         });
 

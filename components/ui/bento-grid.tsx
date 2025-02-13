@@ -24,12 +24,14 @@ export const BentoGridItem = ({
   title,
   description,
   header,
+  audioUrl,
   // icon,
 }: {
   className?: string;
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;
+  audioUrl?: string;
   // icon?: React.ReactNode;
 }) => {
   return (
@@ -48,6 +50,19 @@ export const BentoGridItem = ({
         <div className="font-sans font-normal text-neutral-600 text-xs dark:text-neutral-300">
           {description}
         </div>
+        {audioUrl && (
+          <div className="audio-container">
+            <audio controls className="custom-audio-player">
+              <source src={audioUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+                <div className="play-button">
+                  <span>&play;</span> 
+                </div> 
+                  <div className="progress-bar"></div>
+                  <div className="progress-fill"></div>
+            </audio>
+          </div>
+        )}
       </div>
     </div>
   );
