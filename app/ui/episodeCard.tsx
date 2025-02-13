@@ -11,7 +11,7 @@ interface EpisodeCardsProps {
 // EpisodeCard now accepts podcast data as props
 export function EpisodeCards({ podcast, error }:  EpisodeCardsProps) {
     console.log("Received podcast prop:", podcast); // log received podcast data
-    console.log("Received error prop:", error); // log received error message
+    // console.log("Received error prop:", error); // log received error message
     // Handle the case where podcast data is unavailable
     if (!podcast || !podcast.episodes || podcast.episodes.length === 0) {
         return (
@@ -39,6 +39,7 @@ export function EpisodeCards({ podcast, error }:  EpisodeCardsProps) {
                                 {episode.description ?? "No description available"}
                             </span>
                         }
+                        audioUrl={episode.url}
                         className={"md:col-span-1 lg:col-span-1"}
                     />
                 ))}
