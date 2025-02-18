@@ -3,6 +3,7 @@ import { SparklesPreview } from "./ui/title";
 import { EpisodeCards } from "./ui/episodeCard";
 import { Podcast } from "./lib/types";
 import { AnimatedTooltipPreview } from "./ui/toolTip";
+import { Description } from "./ui/description";
 
 export default async function PodcastPage() {
   let podcastData: Podcast | null = null;
@@ -25,6 +26,7 @@ export default async function PodcastPage() {
   return (
     <div>
       <SparklesPreview />
+      <Description podcast={podcastData} error={errorMessage} />
       <AnimatedTooltipPreview />
       
       <EpisodeCards podcast={podcastData} error={errorMessage} />

@@ -1,0 +1,17 @@
+.description-text {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
+.words {
+    margin-right: 12px;
+    margin-top: 12px;
+    position: relative;
+}
+
+.shadow{
+    position: absolute;
+    opacity: 0.1;
+}
