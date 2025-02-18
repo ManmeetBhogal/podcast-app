@@ -60,7 +60,7 @@ export function Description({ podcast, error }: descriptionProps) {
     const words = cleanedDescription.split(' ');
 
     return (
-        <div className="description-container bg-black pb-40 md:pb-40 lg:pb-60 pl-20 md:pl-40 lg:pl-60 pr-20 lg:pr-60"
+        <div className="description-container bg-black pb-40 md:pb-40 lg:pb-60 pl-10 md:pl-40 lg:pl-60 pr-10 lg:pr-60 md:pr-40"
             style={{ position: 'relative', minHeight: '300px' }}
             ref={element}>
             <p className={`${styles['description-text']} description-text text-2xl md:text-3xl lg:text-3xl font-bold text-left text-white`}
