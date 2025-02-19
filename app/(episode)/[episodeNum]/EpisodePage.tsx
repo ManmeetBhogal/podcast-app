@@ -24,13 +24,16 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
       <h1 className="text-center">{episode.title}</h1>
       {/* <p><strong>Episode Number:</strong> {episode.episodeNum}</p> */}
       <p className="text-center pb-5"><strong>Published:</strong> {new Date(episode.pubDate ?? '').toLocaleDateString()}</p>
-      <div className="description p-10">
+      <div className="description px-10 lg:px-48 pb-10">
         <p>{episode.description}</p>
       </div>
-      <audio controls>
-        <source src={episode.url} type="audio/mpeg" />
-        Your browser does not support the audio element.
-      </audio>
+      <div className="audio-player flex justify-center items-center pb-10">
+        <audio controls>
+            <source src={episode.url} type="audio/mpeg" />
+                Your browser does not support the audio element.
+        </audio>
+      </div>
+      
     </div>
     </div>
   );
