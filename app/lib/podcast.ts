@@ -1,4 +1,4 @@
-import Parser from 'rss-parser'; 
+import Parser from 'rss-parser';
 
 
 const parser = new Parser();
@@ -8,7 +8,7 @@ export async function fetchPodcastFeed() {
 
         // environment variable for RSS Feed Url
         const podcastUrl = process.env.PODCAST_RSS_URL;
-        console.log("PODCAST RSS URL from env:", process.env.PODCAST_RSS_URL);
+        // console.log("PODCAST RSS URL from env:", process.env.PODCAST_RSS_URL);
 
         if (!podcastUrl) {
             throw new Error('Podcast RSS URL is not defined in environment variables');
@@ -20,11 +20,17 @@ export async function fetchPodcastFeed() {
         
         // if fetching the feed works, map the episodes
         const podcastEpisodes = feed.items.map(item => {
+
+            const episodeMatch = item.title?.match(/^E(\d+)\s*[-–]\s*(.+)/);
+            const episodeNum = episodeMatch ? episodeMatch[1] : null;
+            // console.log("Episode Number: ", episodeNum)
+
             return {
                 title: item.title || "No title available",
                 description: item.contentSnippet || "No description available",
                 pubDate: item.pubDate || "No publish date available",
                 url: item.enclosure?.url || "#",
+                episodeNum: episodeNum || "No episode number available"
             };
         });
 
