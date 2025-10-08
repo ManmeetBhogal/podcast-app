@@ -1,8 +1,7 @@
 import { fetchPodcastFeed } from "./lib/podcast";
-import { SparklesPreview } from "./ui/title";
 import { EpisodeCards } from "./ui/episodeCard";
 import { Podcast } from "./lib/types";
-import { AnimatedTooltipPreview } from "./ui/toolTip";
+import { Title } from "./ui/title";
 import { Description } from "./ui/description";
 
 export default async function PodcastPage() {
@@ -25,10 +24,11 @@ export default async function PodcastPage() {
 
   return (
     <div>
-      <SparklesPreview />
-      <Description podcast={podcastData} error={errorMessage} />
-      <AnimatedTooltipPreview />
       
+      <Title />
+
+      <Description />
+
       <EpisodeCards podcast={podcastData} error={errorMessage} />
 
     </div>
