@@ -46,10 +46,10 @@ export function Title() {
           className="lg:text-md font-extralight justify-center text-left text-white mt-8 w-full"
           >
             Episodes feature individuals with lived experiences and experts, covering a range of neurological
-          and psychiatric disorders, such as depression, PTSD, and Alzheimer's disease. We also discuss
+          and psychiatric disorders, such as depression, PTSD, and Alzheimer&apos;s disease. We also discuss
           "hot topics" like how pregnancy shapes "mommy brain" and the effects of air pollution
           on the brain <br></br><br></br>
-          Hosted by neuroscientist Dr. Hilary Marusak
+          Hosted by neuroscientist Dr. Hilary Marusak.
           Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Marumag
           </motion.p>
         {/* <p className="lg:text-md font-extralight justify-center text-left text-white mt-8 ml-36 mr-36">Episodes feature individuals with lived experiences and experts, covering a range of neurological
