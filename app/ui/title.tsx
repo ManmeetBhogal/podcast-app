@@ -34,7 +34,7 @@ export function Title() {
           delay={250}
           animateBy="words"
           direction="top"
-          className="lg:text-3xl md:text-2xl font-bold justify-start text-left text-white mt-24 w-full"
+          className="sm:px-0 md:px-0 lg:px-0 text-lg lg:text-3xl md:text-3xl font-bold justify-left md:justify-center text-left text-white mt-12 sm:mt-24 md:mt-24 w-full"
 
         />
 
@@ -43,7 +43,7 @@ export function Title() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.5, duration: 0.8 }}
             viewport={{ once: true, amount: 0.2 }}
-          className="lg:text-md font-extralight justify-center text-left text-white mt-8 w-full"
+          className="lg:px-0 md:px-4 px-2 lg:text-md font-extralight justify-center text-left text-white mt-8 w-full"
           >
             Episodes feature individuals with lived experiences and experts, covering a range of neurological
           and psychiatric disorders, such as depression, PTSD, and Alzheimer&apos;s disease. We also discuss
