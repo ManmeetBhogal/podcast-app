@@ -47,7 +47,7 @@ export function Title() {
           >
             Episodes feature individuals with lived experiences and experts, covering a range of neurological
           and psychiatric disorders, such as depression, PTSD, and Alzheimer&apos;s disease. We also discuss
-          "hot topics" like how pregnancy shapes "mommy brain" and the effects of air pollution
+          &quot;hot topics&quot; like how pregnancy shapes &quot;mommy brain&quot; and the effects of air pollution
           on the brain <br></br><br></br>
           Hosted by neuroscientist Dr. Hilary Marusak.
           Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Marumag
@@ -63,16 +63,9 @@ export function Title() {
           Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Marumag
         </p> */}
         </div>
+
       </div>
-    
-      {/* <div className="description">
-        <h2 className="lg:text-3xl font-bold text-center text-white">
-          Understanding the brain through science and storytelling
-        </h2>
-      </div> */}
 
     </div>
-
-    
   );
 }

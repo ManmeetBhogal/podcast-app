@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { Renderer, Program, Mesh, Triangle } from 'ogl'; 
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -115,7 +115,6 @@ interface AuroraProps {
   speed?: number;
 }
 
-// add helper to convert hex -> normalized rgb
 function hexToRgbNormalized(hex: string): [number, number, number] {
   let h = hex.replace(/^#/, '');
   if (h.length === 3) h = h.split('').map(c => c + c).join('');
@@ -148,7 +147,25 @@ export default function Aurora(props: AuroraProps) {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.canvas.style.backgroundColor = 'transparent';
 
-    let program: Program | undefined;
+    const geometry = new Triangle(gl);
+    if (geometry.attributes.uv) {
+      delete geometry.attributes.uv;
+    }
+
+    const colorStopsArray = colorStops.map(hex => hexToRgbNormalized(hex));
+
+    // Fix 2: Changed to const and initialized immediately
+    const program = new Program(gl, {
+      vertex: VERT,
+      fragment: FRAG,
+      uniforms: {
+        uTime: { value: 0 },
+        uAmplitude: { value: amplitude },
+        uColorStops: { value: colorStopsArray },
+        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uBlend: { value: blend }
+      }
+    });
 
     function resize() {
       if (!ctn) return;
@@ -160,27 +177,6 @@ export default function Aurora(props: AuroraProps) {
       }
     }
     window.addEventListener('resize', resize);
-
-    const geometry = new Triangle(gl);
-    if (geometry.attributes.uv) {
-      delete geometry.attributes.uv;
-    }
-
-    const colorStopsArray = colorStops.map(hex => {
-      return hexToRgbNormalized(hex);
-    });
-
-    program = new Program(gl, {
-      vertex: VERT,
-      fragment: FRAG,
-      uniforms: {
-        uTime: { value: 0 },
-        uAmplitude: { value: amplitude },
-        uColorStops: { value: colorStopsArray },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
-        uBlend: { value: blend }
-      }
-    });
 
     const mesh = new Mesh(gl, { geometry, program });
     ctn.appendChild(gl.canvas);
@@ -210,7 +206,8 @@ export default function Aurora(props: AuroraProps) {
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [amplitude]);
+    // Fix 3: Added missing dependencies
+  }, [amplitude, blend, colorStops]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }
