@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from 'next/image';
 import PlasmaBackground from "@/components/ui/plasmaBackground";
 import TeamSection from "@/components/TeamMember";
 
