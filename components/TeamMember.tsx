@@ -81,7 +81,7 @@ const TeamMemberCard = ({
 
 export default function TeamSection() {
   return (
-    <section className="team-section">
+    <section id="about" className="team-section">
       <h2 className="lg:text-3xl font-bold text-center mb-4">Meet the team</h2>
 
       <div className="team-members-container max-w-4xl mx-auto">

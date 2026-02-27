@@ -28,7 +28,7 @@ export function EpisodeCards({ podcast, error }:  EpisodeCardsProps) {
     const episodes = podcast.episodes;
 
     return (
-        <div>
+        <div id="episodes">
             <BentoGrid className="max-w-5xl mx-auto">
                 {episodes.map((episode, i: number) => (
                     <BentoGridItem

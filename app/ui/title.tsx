@@ -8,7 +8,7 @@ import BlurText from "@/components/BlurText";
 import { motion } from "motion/react";
 
 const navItems: NavItem[] = [
-  { label: "Home", href: "#" },
+  { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Episodes", href: "#episodes" },
 ];
@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
 
 export function Title() {
   return (
-    <div className="title-container">
+    <div id="home" className="title-container">
       <div className="h-[40rem] w-full bg-[#060010] relative overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-10 pointer-events-none">
           <AuroraBackground />
