@@ -68,10 +68,10 @@ const TeamMemberCard = ({
             />
           </div>
 
-          <h3 className="text-xl font-bold">{name}</h3>
+          <h3 className="text-xl font-bold z-20">{name}</h3>
           <p className="mb-3">{role}</p>
         </div>
-        <div className={`md:w-1/2 ${isAlternate ? "md:ml-8" : "md:mr-8"}`}>
+        <div className={`md:w-1/2 z-20 ${isAlternate ? "md:ml-8" : "md:mr-8"}`}>
           <p className="mb-3">{description}</p>
         </div>
       </div>

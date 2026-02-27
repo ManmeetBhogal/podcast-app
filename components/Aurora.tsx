@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 
 // --- Shaders ---
-
 const VERT = `#version 300 es
 in vec2 position;
 void main() {
@@ -10,20 +9,16 @@ void main() {
 }
 `;
 
-const FRAG = (highQuality: boolean) => `#version 300 es
-${highQuality ? 'precision highp float;' : 'precision mediump float;'}
-
+const FRAG = `#version 300 es
+precision highp float;
 uniform float uTime;
 uniform float uAmplitude;
 uniform vec3 uColorStops[3];
 uniform vec2 uResolution;
 uniform float uBlend;
-
 out vec4 fragColor;
 
-// Optimized permute for faster noise calculation
 vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
-
 float snoise(vec2 v){
   const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
   vec2 i  = floor(v + dot(v, C.yy));
@@ -48,28 +43,16 @@ float snoise(vec2 v){
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
-  
-  // High quality gets smoother color interpolation
-  vec3 rampColor;
-  if (${highQuality}) {
-    float t = smoothstep(0.0, 1.0, uv.x);
-    rampColor = mix(mix(uColorStops[0], uColorStops[1], smoothstep(0.0, 0.5, t)), uColorStops[2], smoothstep(0.5, 1.0, t));
-  } else {
-    rampColor = mix(uColorStops[0], uColorStops[2], uv.x);
-  }
-  
+  float t = smoothstep(0.0, 1.0, uv.x);
+  vec3 rampColor = mix(mix(uColorStops[0], uColorStops[1], smoothstep(0.0, 0.5, t)), uColorStops[2], smoothstep(0.5, 1.0, t));
   float noiseVal = snoise(vec2(uv.x * 1.5 + uTime * 0.1, uTime * 0.15));
   float height = exp(noiseVal * 0.5 * uAmplitude);
   height = (uv.y * 2.0 - height + 0.2);
-  
   float intensity = 0.6 * height;
   float auroraAlpha = smoothstep(0.2 - uBlend * 0.5, 0.2 + uBlend * 0.5, intensity);
-  
   fragColor = vec4(intensity * rampColor * auroraAlpha, auroraAlpha);
 }
 `;
-
-// --- Helpers ---
 
 interface AuroraProps {
   colorStops?: string[];
@@ -81,14 +64,8 @@ interface AuroraProps {
 function hexToRgbNormalized(hex: string): [number, number, number] {
   let h = hex.replace(/^#/, '');
   if (h.length === 3) h = h.split('').map(c => c + c).join('');
-  return [
-    parseInt(h.slice(0, 2), 16) / 255,
-    parseInt(h.slice(2, 4), 16) / 255,
-    parseInt(h.slice(4, 6), 16) / 255
-  ];
+  return [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255];
 }
-
-// --- Component ---
 
 export default function Aurora({
   colorStops = ['#5227FF', '#7cff67', '#5227FF'],
@@ -97,38 +74,32 @@ export default function Aurora({
   speed = 1.0
 }: AuroraProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
-  const [isLowPower, setIsLowPower] = useState(false);
-  
+  const [shouldRender, setShouldRender] = useState(false);
   const normalizedStops = useMemo(() => colorStops.map(hexToRgbNormalized), [colorStops]);
 
   useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setShouldRender(entry.isIntersecting);
+    }, { threshold: 0.05 });
+    if (ctnDom.current) observer.observe(ctnDom.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRender || !ctnDom.current) return;
     const ctn = ctnDom.current;
-    if (!ctn) return;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const performanceDPR = isMobile ? 0.8 : Math.min(window.devicePixelRatio, 2);
 
-    // 1. Performance Monitoring Logic
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let performanceCheckActive = true;
-
-    // 2. Initialize Renderer
-    // Start with high quality but drop DPR immediately if on mobile
-    const initialDPR = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 1.2 : window.devicePixelRatio;
-    
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: !isLowPower,
-      dpr: isLowPower ? 1.0 : initialDPR
-    });
-
+    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: false, dpr: performanceDPR });
     const gl = renderer.gl;
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.style.cssText = 'display:block; width:100%; height:100%; pointer-events:none;';
+    ctn.appendChild(canvas);
 
-    const geometry = new Triangle(gl);
     const program = new Program(gl, {
       vertex: VERT,
-      fragment: FRAG(!isLowPower),
+      fragment: FRAG,
       uniforms: {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
@@ -138,51 +109,43 @@ export default function Aurora({
       }
     });
 
-    const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
-
+    const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
     const resize = () => {
-      const width = ctn.clientWidth;
-      const height = ctn.clientHeight;
-      renderer.setSize(width, height);
+      renderer.setSize(ctn.clientWidth, ctn.clientHeight);
       program.uniforms.uResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
     };
 
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(() => window.requestAnimationFrame(resize));
     ro.observe(ctn);
+    resize();
 
     let animateId: number;
     const update = (t: number) => {
-      // FPS Monitoring
-      frameCount++;
-      if (performanceCheckActive && t - lastTime > 1000) {
-        const fps = (frameCount * 1000) / (t - lastTime);
-        if (fps < 50) {
-          setIsLowPower(true); // Trigger re-render with lower settings
-          performanceCheckActive = false; // Stop checking once we've downgraded
-        }
-        lastTime = t;
-        frameCount = 0;
-      }
-
       program.uniforms.uTime.value = t * 0.0005 * speed;
-      program.uniforms.uAmplitude.value = amplitude;
-      program.uniforms.uColorStops.value = normalizedStops;
-      
       renderer.render({ scene: mesh });
       animateId = requestAnimationFrame(update);
     };
-    
     animateId = requestAnimationFrame(update);
-    resize();
 
     return () => {
       cancelAnimationFrame(animateId);
       ro.disconnect();
-      if (gl.canvas.parentNode) ctn.removeChild(gl.canvas);
+      if (canvas.parentNode) ctn.removeChild(canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [isLowPower, normalizedStops, amplitude, blend, speed]);
+  }, [shouldRender, normalizedStops, amplitude, blend, speed]);
 
-  return <div ref={ctnDom} className="w-full h-full overflow-hidden" />;
+  return (
+    <div 
+      ref={ctnDom} 
+      className="w-full h-full relative overflow-hidden" 
+      tabIndex={-1}
+      style={{ 
+        outline: 'none', 
+        contain: 'paint size layout', 
+        pointerEvents: 'none',
+        WebkitContain: 'paint size layout' 
+      } as React.CSSProperties}
+    />
+  );
 }
