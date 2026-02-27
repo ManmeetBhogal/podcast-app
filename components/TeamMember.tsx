@@ -68,10 +68,10 @@ const TeamMemberCard = ({
             />
           </div>
 
-          <h3 className="text-xl font-bold">{name}</h3>
+          <h3 className="text-xl font-bold z-20">{name}</h3>
           <p className="mb-3">{role}</p>
         </div>
-        <div className={`md:w-1/2 ${isAlternate ? "md:ml-8" : "md:mr-8"}`}>
+        <div className={`md:w-1/2 z-20 ${isAlternate ? "md:ml-8" : "md:mr-8"}`}>
           <p className="mb-3">{description}</p>
         </div>
       </div>
@@ -81,7 +81,7 @@ const TeamMemberCard = ({
 
 export default function TeamSection() {
   return (
-    <section className="team-section">
+    <section id="about" className="team-section">
       <h2 className="lg:text-3xl font-bold text-center mb-4">Meet the team</h2>
 
       <div className="team-members-container max-w-4xl mx-auto">
