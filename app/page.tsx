@@ -3,6 +3,10 @@ import { EpisodeCards } from "./ui/episodeCard";
 import { Podcast } from "./lib/types";
 import { Title } from "./ui/title";
 import { Description } from "./ui/description";
+import PodcastTicker from "@/components/PodcastPlatforms";
+
+
+
 
 export default async function PodcastPage() {
   let podcastData: Podcast | null = null;
@@ -26,6 +30,8 @@ export default async function PodcastPage() {
     <div>
       
       <Title />
+
+      <PodcastTicker />
 
       <Description />
 
