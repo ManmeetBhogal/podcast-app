@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { motion } from 'framer-motion';
 
 // Define team member properties
 interface TeamMemberProps {
@@ -14,11 +15,18 @@ const teamData: TeamMemberProps[] = [
   {
     name: "Dr. Hilary Marusak",
     role: "Host",
-    photoUrl: "/team/placeholder.jpg",
-    description: `Dr. Marusak is a neuroscientist at Wayne State University, and directs the WSU THINK Lab. 
-                        The THINK lab studies brain development in children and adolescents and the impacts of environmental 
-                        stress on the brain, as well as anxiety & PTSD. Dr. Marusak is interested in neuroscience communication
-                         and science-advocacy.`,
+    photoUrl: "/team/hilary.jpg",
+    description: `Dr. Hilary Marusak is a developmental neuroscientist and tenured Associate Professor of Psychiatry 
+                  and Behavioral Neurosciences at Wayne State University School of Medicine. She directs the Division 
+                  of Cannabinoids in Neurodevelopment (CANDID) and the THINK Lab, which use neuroimaging and behavioral 
+                  approaches to study the effects of cannabis, stress, and the endocannabinoid system on brain development 
+                  and mental health in youth.
+                  
+                  Dr. Marusak is a PI or MPI on studies funded by the National Institutes of Health, One Mind, and the 
+                  State of Michigan. She is an Associate Member of the American College of Neuropsychopharmacology (ACNP) 
+                  and serves as a Non-Voting Associate Member of the ACNP Council. She also holds national leadership and 
+                  editorial roles, co-founded Science Policy Network-Detroit, and hosts the BrainSTEM podcast to share 
+                  evidence-based brain science with the public.`,
   },
   {
     name: "Manmeet Bhogal",
@@ -45,6 +53,15 @@ const teamData: TeamMemberProps[] = [
   },
 ];
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
 const TeamMemberCard = ({
   name,
   role,
@@ -53,51 +70,82 @@ const TeamMemberCard = ({
   isAlternate,
 }: TeamMemberProps) => {
   return (
-    <div className="flex flex-col items-center text-center p-6">
-      <div className={`flex ${isAlternate ? "md:flex-row-reverse" : "md:flex-row"} md:items-center justify-between`}>
-
-        <div className="w-1/2 flex flex-col items-center">
-
-          {/* Circular image wrapper */}
-          <div className="relative w-36 h-36 rounded-full overflow-hidden mb-4 z-20">
-            <Image
-              src={photoUrl}
-              alt={`'${name}'s photo`}
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
-
-          <h3 className="text-xl font-bold z-20">{name}</h3>
-          <p className="mb-3">{role}</p>
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-60px" }}
+      className={`flex flex-col md:flex-row ${
+        isAlternate ? "md:flex-row-reverse" : ""
+      } items-center gap-8 md:gap-12 py-10 sm:py-12`}
+    >
+      {/* Photo + name + role */}
+      <div className="flex flex-col items-center flex-shrink-0">
+        {/* Circular photo with subtle ring */}
+        <div className="relative z-10 w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden ring-1 ring-white/10 mb-4">
+          <Image
+            src={photoUrl}
+            alt={`${name}'s photo`}
+            fill
+            className="object-cover"
+          />
         </div>
-        <div className={`md:w-1/2 z-20 ${isAlternate ? "md:ml-8" : "md:mr-8"}`}>
-          <p className="mb-3">{description}</p>
-        </div>
+        <h3 className="text-base sm:text-lg font-semibold text-white tracking-wide z-10">
+          {name}
+        </h3>
+        <p className="text-xs z-10 sm:text-sm text-white/50 uppercase tracking-[0.15em] mt-1 font-light">
+          {role}
+        </p>
       </div>
-    </div>
+ 
+      {/* Divider line — horizontal on mobile, vertical on desktop */}
+      <div className="w-16 h-px md:w-px md:h-24 bg-white/10 flex-shrink-0" />
+ 
+      {/* Description */}
+      <p className="whitespace-pre-line text-sm sm:text-base text-white z-10 leading-relaxed font-light md:text-left max-w-sm md:max-w-none">
+        {description}
+      </p>
+    </motion.div>
   );
 };
-
+ 
 export default function TeamSection() {
   return (
-    <section id="about" className="team-section">
-      <h2 className="lg:text-3xl font-bold text-center mb-4">Meet the team</h2>
-
-      <div className="team-members-container max-w-4xl mx-auto">
-        {teamData.map((member, index) => (
-          <TeamMemberCard
-            key={member.name}
-            name={member.name}
-            role={member.role}
-            photoUrl={member.photoUrl}
-            description={member.description}
-            isAlternate={index % 2 === 1} // Alternate starting from the second member
-          />
-        ))}
+    <section id="about" className="w-full py-10 sm:py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+ 
+        {/* Divider top */}
+        {/* <div className="h-px bg-white/10 mb-8 sm:mb-10" /> */}
+ 
+        {/* Heading */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center text-xs tracking-[0.2em] uppercase text-white/50 mb-8 sm:mb-10 font-light"
+        >
+          Meet the team
+        </motion.p>
+ 
+        {/* Team members — separated by hairline dividers */}
+        <div className="flex flex-col divide-y divide-white/10">
+          {teamData.map((member, index) => (
+            <TeamMemberCard
+              key={member.name}
+              name={member.name}
+              role={member.role}
+              photoUrl={member.photoUrl}
+              description={member.description}
+              isAlternate={index % 2 === 1}
+            />
+          ))}
+        </div>
+ 
+        {/* Divider bottom */}
+        <div className="h-px bg-white/10 mt-2" />
+ 
       </div>
-
-      
     </section>
   );
 }

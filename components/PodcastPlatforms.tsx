@@ -44,7 +44,7 @@ const itemVariants = {
 
 export default function PodcastPlatforms() {
   return (
-    <section className="w-full mb-16 py-10 sm:py-12">
+    <section className="w-full py-10 sm:py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Divider top */}
