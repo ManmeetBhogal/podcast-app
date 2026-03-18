@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# BrainSTEM Podcast Web App
 
-First, run the development server:
+A lightweight, **Next.js**-powered website that automatically pulls new episodes from the BrainSTEM podcast RSS feed and displays them in episode cards.
+
+## Why it exists
+
+The podcast owner never has to touch the code to manually update the website. Whenever a new episode is published, the RSS feed updates and the section for the site regenerates the episode card, with the newest content appearing instantly.
+
+## Demo
+
+**Live Site** : <https://podcast-app-kappa-two.vercel.app/>
+
+## Features
+
+| Feature               | Description                                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Automatic Updates** | Parses the RSS feed at build time; any new episode triggers a rebuild automatically                                                |
+| **Episode Cards**     | Title, description, MP3 player                                                                                                     |
+| **Responsive Design** | Mobile-first layout that looks great on all screen sizes                                                                           |
+| **SEO Friendly**      | Pre-renders pages either at build (SSG) or on each request (SSR) so search engines receive fully populated HTML ready for crawling |
+| **TypeScript**        | Strong typing for safety and editor intelligence                                                                                   |
+| **Tailwind CSS**      | Rapid UI building and easy theming                                                                                                 |
+
+## Tech Stack
+
+| Category       | Tool / Library      | Purpose                     |
+| -------------- | ------------------- | --------------------------- |
+| **Framework**  | Next.js 14          | SSR + SSG + SEO             |
+| **Language**   | TypeScript          | Static typing               |
+| **UI**         | React + TailwindCSS | Component-based UI          |
+| **RSS Parser** | `rss-parser`        | Fetches and parses RSS Feed |
+| **Deployment** | Vercel              | Serverless hosting          |
+
+## How it works
+
+1. **RSS Feed Fetch** - During the build (`next build`), `rss-parser` pulls the feed from the URL in .env file with `PODCAST_RSS_URL`
+2. **Data Transformation** - Each `<item>` is parsed for title, description, pubDate, url and episodeNum.
+3. **Rendering** - each episode is mapped and iterated through to render title, description, and audioUrl
+4. **Rebuilds** - When a new episode is published to the RSS feed, a new `episodeCard` appears automatically.
+
+## Local Deployment
+
+| Tool           | Minimum Version | Why                 |
+| -------------- | --------------- | ------------------- |
+| Node.js        | 20.x or newer   | Runtime for Next.js |
+| npm            | 10.x            | Package manager     |
+| (optional) Git | Any             | Version Control     |
+
+**Tip:** Use `nvm` to manage Node versions.
+
+## Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/ManmeetBhogal/podcast-app.git
+cd podcast-app
+
+# Install dependencies
+npm install   
+
+# Verify the project works locally
+npm run dev   # opens http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser at <http://localhost:3000>. Every time you modify the feed
+URL or episode data, restart the dev server to see changes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Veriable          | Descripition             | Required |
+| ----------------- | ------------------------ | -------- |
+| `PODCAST_RSS_URL` | Full URL of the RSS feed | Yes      |
 
-## Learn More
+Add a `.env.local` file for local development: (example)
 
-To learn more about Next.js, take a look at the following resources:
+```
+PODCAST_RSS_URL=https://anchor.fm/s/493495d8/podcast/rss
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Script | Command | Description |
+|--------|---------|-------------|
+| `dev` | `next dev` | Development server with HMR |
+| `build` | `next build` | Generate static assets |
+| `start` | `next start` | Run the production build locally |
+| `lint` | `next lint` | Run ESLint & Prettier |
+| `format` | `prettier --write .` | Auto‑format source files |
 
-## Deploy on Vercel
+## Acknowledgements
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js](https://nextjs.org) – The framework that powers this app.
+- [rss-parser](https://github.com/rbren/rss-parser) – Simple RSS parsing.
+- [Tailwind CSS](https://tailwindcss.com) – Rapid styling.
+- [Framer Motion](https://motion.dev/) - A production grade animation library for the web.
