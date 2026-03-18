@@ -34,7 +34,7 @@ const teamData: TeamMemberProps[] = [
     description: `Amanpreet graduated with her Bachelor of Science in Psychology in 2019 and is one of the co-producers of the brainSTEM podcast. Aman is passionate about making science accessible to everyone which she believes can be done in various creative avenues. Aman has worked in various neuroscience research labs and is currently pursuing a post graduate degree in Health Informatics from the University of Michigan.`,
   },
   {
-    name: "Gabby Marumag",
+    name: "Gabby Maramag",
     role: "Co-Producer",
     photoUrl: "/team/placeholder.jpg",
     description: `Gabby is a Co-Producer for the brainSTEM podcast. She is passionate about science communication and storytelling.`,
