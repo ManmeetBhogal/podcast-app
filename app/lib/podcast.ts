@@ -13,8 +13,12 @@ export async function fetchPodcastFeed() {
         if (!podcastUrl) {
             throw new Error('Podcast RSS URL is not defined in environment variables');
         }
-        // try to fetch podcast feed
-        const feed = await parser.parseURL(podcastUrl);
+        // Fetch the RSS XML using the WHATWG-compliant fetch() API,
+        // then parse the string 
+        const res = await fetch(podcastUrl);
+        if (!res.ok) throw new Error(`Failed to fetch RSS feed: ${res.status}`);
+        const xml = await res.text();
+        const feed = await parser.parseString(xml);
         // console.log("Fetched Podcast Feed:", feed); // log the full feed response
         
         

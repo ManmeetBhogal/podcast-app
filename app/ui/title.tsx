@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
 export function Title() {
   return (
     <div id="home" className="title-container">
-      <div className="h-[40rem] w-full bg-[#060010] relative overflow-hidden flex items-center justify-center">
+      <div className="h-[35rem] w-full bg-[#060010] relative overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-10 pointer-events-none">
           <AuroraBackground />
         </div>
@@ -52,16 +52,6 @@ export function Title() {
           Hosted by neuroscientist Dr. Hilary Marusak.
           Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Maramag
           </motion.p>
-        {/* <p className="lg:text-md font-extralight justify-center text-left text-white mt-8 ml-36 mr-36">Episodes feature individuals with lived experiences and experts, covering a range of neurological
-          and psychiatric disorders, such as depression, PTSD, and Alzheimer's disease. We also discuss
-          "hot topics" like how pregnancy shapes "mommy brain" and the effects of air pollution
-          on the brain
-        </p> */}
-
-        {/* <p className="lg:text-md font-extralight justify-center text-left text-white mt-8 ml-36 mr-auto">
-          Hosted by neuroscientist Dr. Hilary Marusak
-          Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Maramag
-        </p> */}
         </div>
 
       </div>

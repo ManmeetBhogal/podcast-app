@@ -104,16 +104,27 @@ export default function TeamSection() {
   return (
     <section id="about" className="w-full py-10 sm:py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        {/* Heading */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center text-xs tracking-[0.2em] uppercase text-white/50 mb-8 sm:mb-10 font-light"
+        {/* Heading — matches the Episodes section heading style */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.2 }}
+          className="flex flex-col items-center text-center mb-10 sm:mb-12"
         >
-          Meet the team
-        </motion.p>
+          {/* Eyebrow label */}
+          <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-2">
+            Our Team
+          </p>
+
+          {/* Primary heading */}
+          <h2 className="text-white/90 text-3xl md:text-4xl font-bold leading-tight">
+            Meet the Team
+          </h2>
+
+          {/* Accent rule */}
+          <div className="mt-3 h-px w-16 bg-white/20 rounded-full" />
+        </motion.div>
 
         {/* Team members — separated by hairline dividers */}
         <div className="flex flex-col divide-y divide-white/10">
