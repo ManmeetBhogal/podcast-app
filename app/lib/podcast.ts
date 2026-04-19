@@ -34,7 +34,7 @@ export async function fetchPodcastFeed() {
                 description: item.contentSnippet || "No description available",
                 pubDate: item.pubDate || "No publish date available",
                 url: item.enclosure?.url || "#",
-                episodeNum: episodeNum || "No episode number available"
+                episodeNum: episodeNum || "No episode number available",
             };
         });
 

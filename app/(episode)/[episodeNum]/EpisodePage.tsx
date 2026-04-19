@@ -4,6 +4,7 @@ import GlassNavBar from "@/components/ui/glassNavBar";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { SiSpotify, SiApplepodcasts, SiPocketcasts, SiYoutube } from "react-icons/si";
 
 interface EpisodePageProps {
   episode: Episode | null;
@@ -84,15 +85,15 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
             )}
           </motion.div>
 
-          {/* ── Audio player — glass card ── */}
+          {/* ── Audio player + platform links — glass card ── */}
           {episode.url && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-              className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-5"
+              className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-5 flex flex-col gap-4"
             >
-              <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-3">
+              <p className="text-white/40 text-xs font-medium uppercase tracking-widest">
                 Listen
               </p>
               <audio
@@ -102,6 +103,27 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
               >
                 <source src={episode.url} type="audio/mpeg" />
               </audio>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { icon: SiSpotify,       name: "Spotify",        color: "#1DB954", href: "https://open.spotify.com/show/2BRbrtuu5KouWZ6nCb9kDB" },
+                  { icon: SiApplepodcasts, name: "Apple Podcasts",  color: "#B150E2", href: "https://podcasts.apple.com/us/podcast/brainstem/id1561056912" },
+                  { icon: SiPocketcasts,   name: "Pocket Casts",   color: "#F43F00", href: "https://pocketcasts.com/podcast/brainstem/9cd82570-7498-0139-345d-0acc26574db2" },
+                  { icon: SiYoutube,       name: "YouTube",         color: "#FF0000", href: "https://www.youtube.com/@brainstempodcast" },
+                ].map(({ icon: Icon, name, color, href }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 transition-colors duration-300"
+                  >
+                    <Icon size={14} style={{ color }} className="flex-shrink-0" />
+                    <span className="text-xs text-white/60 group-hover:text-white/90 transition-colors duration-300 font-light whitespace-nowrap">
+                      {name}
+                    </span>
+                  </a>
+                ))}
+              </div>
             </motion.div>
           )}
 

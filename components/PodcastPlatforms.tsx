@@ -4,21 +4,15 @@ import { motion } from "framer-motion";
 import {
   SiSpotify,
   SiApplepodcasts,
-  SiAmazonmusic,
-  SiAudible,
-  SiCastbox,
   SiPocketcasts,
-  SiIheartradio,
+  SiYoutube,
 } from "react-icons/si";
 
 const platforms = [
-  { icon: SiSpotify,       name: "Spotify",        color: "#1DB954" },
-  { icon: SiApplepodcasts, name: "Apple Podcasts",  color: "#B150E2" },
-  { icon: SiAmazonmusic,   name: "Amazon Music",    color: "#00A8E1" },
-  { icon: SiAudible,       name: "Audible",         color: "#F8991D" },
-  { icon: SiCastbox,       name: "Castbox",         color: "#F55B23" },
-  { icon: SiPocketcasts,   name: "Pocket Casts",    color: "#F43F00" },
-  { icon: SiIheartradio,   name: "iHeartRadio",     color: "#C6002B" },
+  { icon: SiSpotify,       name: "Spotify",        color: "#1DB954", href: "https://open.spotify.com/show/2BRbrtuu5KouWZ6nCb9kDB?si=cf5ce99de5fb4587" },
+  { icon: SiApplepodcasts, name: "Apple Podcasts",  color: "#B150E2", href: "https://podcasts.apple.com/us/podcast/brainstem/id1561056912" },
+  { icon: SiPocketcasts,   name: "Pocket Casts",    color: "#F43F00", href: "https://pocketcasts.com/podcast/brainstem/9cd82570-7498-0139-345d-0acc26574db2" },
+  { icon: SiYoutube,       name: "YouTube",          color: "#FF0000", href: "https://www.youtube.com/@brainstempodcast" },
 ];
 
 /* Shared fade-up transition — matches the motion.p in title.tsx */
@@ -51,24 +45,29 @@ export default function PodcastPlatforms() {
         <motion.div
           {...fadeUp}
           transition={{ delay: 3.5, duration: 0.6, ease: "easeOut" }}
-          className="flex flex-wrap justify-center gap-2 sm:gap-3"
+          className="flex flex-wrap justify-center gap-4 sm:gap-6"
         >
           {platforms.map((platform) => {
             const Icon = platform.icon;
+            const Tag = platform.href ? "a" : "div";
             return (
               <motion.div
                 key={platform.name}
                 whileHover={{ scale: 1.04 }}
-                className="group flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm cursor-pointer transition-colors duration-300 hover:border-white/20 hover:bg-white/10"
               >
-                <Icon
-                  size={14}
-                  style={{ color: platform.color }}
-                  className="transition-transform duration-300 group-hover:scale-110 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-white/60 group-hover:text-white/90 transition-colors duration-300 font-light whitespace-nowrap">
-                  {platform.name}
-                </span>
+                <Tag
+                  {...(platform.href ? { href: platform.href, target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="group flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm cursor-pointer transition-colors duration-300 hover:border-white/20 hover:bg-white/10"
+                >
+                  <Icon
+                    size={14}
+                    style={{ color: platform.color }}
+                    className="transition-transform duration-300 group-hover:scale-110 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-white/60 group-hover:text-white/90 transition-colors duration-300 font-light whitespace-nowrap">
+                    {platform.name}
+                  </span>
+                </Tag>
               </motion.div>
             );
           })}
