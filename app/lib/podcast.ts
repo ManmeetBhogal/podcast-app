@@ -24,24 +24,36 @@ export async function fetchPodcastFeed() {
         
         // if fetching the feed works, map the episodes
         const podcastEpisodes = feed.items.map(item => {
+            const isVideoVersion = item.title?.includes("(Spotify Video Version)") ?? false;
+            const cleanTitle = item.title?.replace(/\s*\(Spotify Video Version\)\s*$/i, "").trim();
 
-            const episodeMatch = item.title?.match(/^E(\d+)\s*[-–]\s*(.+)/);
+            const episodeMatch = cleanTitle?.match(/^E(\d+)\s*[-–]\s*(.+)/);
             const episodeNum = episodeMatch ? episodeMatch[1] : null;
-            // console.log("Episode Number: ", episodeNum)
 
             return {
-                title: item.title || "No title available",
+                title: cleanTitle || "No title available",
                 description: item.contentSnippet || "No description available",
                 pubDate: item.pubDate || "No publish date available",
                 url: item.enclosure?.url || "#",
                 episodeNum: episodeNum || "No episode number available",
+                isVideoVersion,
             };
         });
+
+        // Deduplicate: for episodes with both a video and audio version, keep the video version
+        const episodeMap = new Map<string, typeof podcastEpisodes[0]>();
+        for (const episode of podcastEpisodes) {
+            const key = episode.episodeNum;
+            const existing = episodeMap.get(key);
+            if (!existing || episode.isVideoVersion) {
+                episodeMap.set(key, episode);
+            }
+        }
 
         return {
             title: feed.title || "No title available",
             description: feed.description || "No description available",
-            episodes: podcastEpisodes,
+            episodes: Array.from(episodeMap.values()),
         };
 
     } catch (error) {

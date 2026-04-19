@@ -4,6 +4,7 @@ export interface Episode {
     pubDate: string | undefined
     url: string | undefined;
     episodeNum: string | undefined;
+    isVideoVersion: boolean;
 }
 
 export interface Podcast {
