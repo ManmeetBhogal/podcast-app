@@ -25,7 +25,7 @@ const teamData: TeamMemberProps[] = [
     name: "Manmeet Bhogal",
     role: "Co-Producer",
     photoUrl: "/team/Manmeet.jpg",
-    description: `Manmeet is a Co-Producer and the audio engineer for the brainSTEM podcast. He is passionate about science communication through storytelling. Manmeet has a background in computer science with an undergraduate degree from Wayne State University.`,
+    description: `Manmeet is a Computer Science graduate from Wayne State University who believes science communication deserves a compelling digital experience. As Co-Producer of the brainSTEM Podcast, he handles all audio and video editing and post-production, managing everything from equipment to the final product. He also designed and developed the podcast's web application, combining his technical expertise with a passion for making science more accessible to a wider audience.`,
   },
   {
     name: "Amanpreet Bhogal",
@@ -36,8 +36,8 @@ const teamData: TeamMemberProps[] = [
   {
     name: "Gabby Maramag",
     role: "Co-Producer",
-    photoUrl: "/team/placeholder.jpg",
-    description: `Gabby is a Co-Producer for the brainSTEM podcast. She is passionate about science communication and storytelling.`,
+    photoUrl: "/team/Gabby.jpg",
+    description: `Gabby is a researcher in behavioral and cognitive neuroscience, focusing on how socioenvironmental inequities shape the brain and influence psychological wellbeing. As a co-producer of the brainSTEM Podcast, she aims to destigmatize mental health and make science more equitable and accessible.`,
   },
 ];
 
