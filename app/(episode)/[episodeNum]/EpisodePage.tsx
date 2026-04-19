@@ -5,6 +5,7 @@ import AuroraBackground from "@/components/ui/AuroraBackground";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { SiSpotify, SiApplepodcasts, SiPocketcasts, SiYoutube } from "react-icons/si";
+import AudioPlayer from "@/app/ui/AudioPlayer";
 
 interface EpisodePageProps {
   episode: Episode | null;
@@ -96,13 +97,7 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
               <p className="text-white/40 text-xs font-medium uppercase tracking-widest">
                 Listen
               </p>
-              <audio
-                controls
-                className="w-full rounded-lg"
-                style={{ colorScheme: "dark" }}
-              >
-                <source src={episode.url} type="audio/mpeg" />
-              </audio>
+              <AudioPlayer src={episode.url} />
               <div className="flex flex-wrap gap-3">
                 {[
                   { icon: SiSpotify,       name: "Spotify",        color: "#1DB954", href: "https://open.spotify.com/show/2BRbrtuu5KouWZ6nCb9kDB" },
@@ -115,10 +110,10 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 transition-colors duration-300"
+                    className="group flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 transition-colors duration-300"
                   >
                     <Icon size={14} style={{ color }} className="flex-shrink-0" />
-                    <span className="text-xs text-white/60 group-hover:text-white/90 transition-colors duration-300 font-light whitespace-nowrap">
+                    <span className="hidden sm:inline text-xs text-white/60 group-hover:text-white/90 transition-colors duration-300 font-light whitespace-nowrap">
                       {name}
                     </span>
                   </a>
