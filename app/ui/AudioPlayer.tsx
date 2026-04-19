@@ -62,7 +62,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    isPlaying ? audio.pause() : audio.play();
+    if (isPlaying) { audio.pause(); } else { audio.play(); }
   };
 
   const changeSpeed = (s: number) => {
