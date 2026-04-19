@@ -32,7 +32,7 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
     <div className="min-h-screen w-full bg-[#060010] relative">
 
       {/* ── Aurora background — same as the home page hero ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#060010]">
         <AuroraBackground />
       </div>
 
