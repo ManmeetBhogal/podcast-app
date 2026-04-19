@@ -23,7 +23,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [speed, setSpeed] = useState(1);
 
   useEffect(() => {
