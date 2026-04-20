@@ -22,6 +22,9 @@ export function Description() {
         <TeamSection />
       </div>
 
+      {/* Gradient fade — blends the plasma background into the episodes section */}
+      <div className="absolute bottom-0 inset-x-0 h-40 z-20 pointer-events-none bg-gradient-to-b from-transparent to-[#060010]" />
+
       {/* <h2 className="text-center">
                 Hosted by neuroscientist Dr. Hilary Marusak <br></br>
                 Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Marumag
