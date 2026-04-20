@@ -30,8 +30,8 @@ const teamData: TeamMemberProps[] = [
   {
     name: "Amanpreet Bhogal",
     role: "Co-Producer",
-    photoUrl: "/team/placeholder.jpg",
-    description: `Amanpreet graduated with her Bachelor of Science in Psychology in 2019 and is one of the co-producers of the brainSTEM podcast. Aman is passionate about making science accessible to everyone which she believes can be done in various creative avenues. Aman has worked in various neuroscience research labs and is currently pursuing a post graduate degree in Health Informatics from the University of Michigan.`,
+    photoUrl: "/team/aman.jpg",
+    description: `Amanpreet Bhogal is completing her Master of Health Informatics at the University of Michigan, where she has focused on the intersection of healthcare, research, and analytics. Her experience spans neuroscience and digital health projects, with an emphasis on improving how healthcare systems serve diverse populations. As a co-producer of the brainSTEM podcast, she oversees production and is passionate about making scientific knowledge accessible and relevant to everyday audiences.`,
   },
   {
     name: "Gabby Maramag",
