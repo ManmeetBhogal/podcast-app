@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { SiSpotify, SiApplepodcasts, SiPocketcasts, SiYoutube } from "react-icons/si";
 import AudioPlayer from "@/app/ui/AudioPlayer";
+import { formatDateLong } from "@/app/lib/utils";
 
 interface EpisodePageProps {
   episode: Episode | null;
@@ -20,13 +21,7 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
     );
   }
 
-  const pubDate = episode.pubDate
-    ? new Date(episode.pubDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : null;
+  const pubDate = episode.pubDate ? formatDateLong(episode.pubDate) : null;
 
   return (
     <div className="min-h-screen w-full bg-[#060010] relative">

@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Podcast } from "../lib/types";
+import { formatDateShort } from "../lib/utils";
 
 interface EpisodeCardsProps {
     podcast?: Podcast | null;
@@ -103,11 +104,7 @@ export function EpisodeCards({ podcast, error }: EpisodeCardsProps) {
                         {/* ── Pub date (formatted for readability) ── */}
                         {episode.pubDate && (
                             <p className="text-white/40 text-xs">
-                                {new Date(episode.pubDate).toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                })}
+                                {formatDateShort(episode.pubDate)}
                             </p>
                         )}
 
