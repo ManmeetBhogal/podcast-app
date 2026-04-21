@@ -74,6 +74,7 @@ const TeamMemberCard = ({
             src={photoUrl}
             alt={`${name}'s photo`}
             fill
+            sizes="(max-width: 640px) 128px, 144px"
             className="object-cover"
           />
         </div>

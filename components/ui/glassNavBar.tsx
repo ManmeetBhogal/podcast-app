@@ -110,7 +110,7 @@ const GlassNavBar: React.FC<GlassNavBarProps> = ({
                 alt="brainSTEM logo"
                 width={36}
                 height={36}
-                className="object-contain"
+                className="object-contain w-9 h-9"
               />
             </button>
           )}
