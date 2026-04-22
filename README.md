@@ -9,7 +9,7 @@ The podcast owner never has to touch the code to manually update the website. Wh
 
 ## Demo
 
-**Live Site** : <https://podcast-app-kappa-two.vercel.app/>
+**Live Site** : <https://podcast-app-kappa-two.vercel.app/> | <https://brainstempodcast.com/>
 
 ## Features
 
