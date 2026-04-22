@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/stats/:path*",
+        destination: `${process.env.UMAMI_URL}/:path*`,
+      },
+    ];
+  },
   devIndicators: false,
 };
 
