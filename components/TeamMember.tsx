@@ -39,6 +39,12 @@ const teamData: TeamMemberProps[] = [
     photoUrl: "/team/Gabby.jpg",
     description: `Gabby is a researcher in behavioral and cognitive neuroscience, focusing on how socioenvironmental inequities shape the brain and influence psychological wellbeing. As a co-producer of the brainSTEM Podcast, she aims to destigmatize mental health and make science more equitable and accessible.`,
   },
+  {
+    name: "Natalie Thurston",
+    role: "Co-Producer",
+    photoUrl: "/team/natalie.jpg",
+    description: `Natalie is a current post-bacc research assistant coordinating a study focused on exercise and mental health. She plans to pursue a doctorate in clinical psychology and her research interests include protective factors and interventions for youth populations. As a co-producer of the brainSTEM Podcast, she aims to raise awareness about mental health disorders and strengthen connections between scientists and the broader community.`,
+  },
 ];
 
 const cardVariants = {
