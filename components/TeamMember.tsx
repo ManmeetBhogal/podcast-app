@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 // Define team member properties
 interface TeamMemberProps {
   name: string;
-  role: string;
+  role: string | string[];
   photoUrl: string;
   description: string | string[];
   isAlternate?: boolean;
@@ -14,7 +14,7 @@ interface TeamMemberProps {
 const teamData: TeamMemberProps[] = [
   {
     name: "Dr. Hilary Marusak",
-    role: "Host",
+    role: ["Host"],
     photoUrl: "/team/hilary.jpg",
     description: [
       `Dr. Hilary Marusak is a developmental neuroscientist and tenured Associate Professor of Psychiatry and Behavioral Neurosciences at Wayne State University School of Medicine. She directs the Division of Cannabinoids in Neurodevelopment (CANDID) and the THINK Lab, which use neuroimaging and behavioral approaches to study the effects of cannabis, stress, and the endocannabinoid system on brain development and mental health in youth.`,
@@ -23,25 +23,25 @@ const teamData: TeamMemberProps[] = [
   },
   {
     name: "Manmeet Bhogal",
-    role: "Co-Producer",
+    role:["Technical Producer", "Web Developer"],
     photoUrl: "/team/Manmeet.jpg",
     description: `Manmeet is a Computer Science graduate from Wayne State University who believes science communication deserves a compelling digital experience. As Co-Producer of the brainSTEM Podcast, he handles all audio and video editing and post-production, managing everything from equipment to the final product. He also designed and developed the podcast's web application, combining his technical expertise with a passion for making science more accessible to a wider audience.`,
   },
   {
     name: "Amanpreet Bhogal",
-    role: "Co-Producer",
+    role: ["Co-Producer"],
     photoUrl: "/team/aman.jpg",
     description: `Amanpreet Bhogal is completing her Master of Health Informatics at the University of Michigan, where she has focused on the intersection of healthcare, research, and analytics. Her experience spans neuroscience and digital health projects, with an emphasis on improving how healthcare systems serve diverse populations. As a co-producer of the brainSTEM podcast, she oversees production and is passionate about making scientific knowledge accessible and relevant to everyday audiences.`,
   },
   {
     name: "Gabby Maramag",
-    role: "Co-Producer",
+    role: ["Co-Producer"],
     photoUrl: "/team/Gabby.jpg",
     description: `Gabby is a researcher in behavioral and cognitive neuroscience, focusing on how socioenvironmental inequities shape the brain and influence psychological wellbeing. As a co-producer of the brainSTEM Podcast, she aims to destigmatize mental health and make science more equitable and accessible.`,
   },
   {
     name: "Natalie Thurston",
-    role: "Co-Producer",
+    role: ["Co-Producer"],
     photoUrl: "/team/natalie.jpg",
     description: `Natalie is a current post-bacc research assistant coordinating a study focused on exercise and mental health. She plans to pursue a doctorate in clinical psychology and her research interests include protective factors and interventions for youth populations. As a co-producer of the brainSTEM Podcast, she aims to raise awareness about mental health disorders and strengthen connections between scientists and the broader community.`,
   },
@@ -87,8 +87,14 @@ const TeamMemberCard = ({
         <h3 className="text-base sm:text-lg font-semibold text-white tracking-wide z-10 whitespace-nowrap">
           {name}
         </h3>
-        <p className="text-xs z-10 sm:text-sm text-white/50 uppercase tracking-[0.15em] mt-1 font-light">
-          {role}
+        <p className="z-10 mt-1 text-center text-xs sm:text-sm text-white/50 uppercase tracking-[0.15em] font-light leading-relaxed">
+          {Array.isArray(role)
+            ? role.map((line) => (
+              <span key={line} className="block whitespace-nowrap">
+                {line}
+              </span>
+            ))
+          : role}
         </p>
       </div>
 

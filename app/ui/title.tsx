@@ -50,7 +50,7 @@ export function Title() {
           &quot;hot topics&quot; like how pregnancy shapes &quot;mommy brain&quot; and the effects of air pollution
           on the brain <br></br><br></br>
           Hosted by neuroscientist Dr. Hilary Marusak.
-          Produced by Manmeet Bhogal, Amanpreet Bhogal, and Gabby Maramag
+          Produced by Manmeet Bhogal, Amanpreet Bhogal, Gabby Maramag, and Natalie Thurston.
           </motion.p>
         </div>
 
