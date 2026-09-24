@@ -6,9 +6,10 @@ import GlassNavBar from "@/components/ui/glassNavBar";
 import type { NavItem } from "@/components/ui/glassNavBar";
 import BlurText from "@/components/BlurText";
 import { motion } from "motion/react";
+import NavDonateButton from "@/components/donate/NavDonateButton";
 
+// No "Home" link — the logo already scrolls/navigates home
 const navItems: NavItem[] = [
-  { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Episodes", href: "#episodes" },
 ];
@@ -22,7 +23,7 @@ export function Title() {
           <AuroraBackground />
         </div>
 
-        <GlassNavBar items={navItems} />
+        <GlassNavBar items={navItems} cta={<NavDonateButton />} />
 
         <div className="relative flex flex-col items-center z-20 w-full max-w-4xl px-4 mx-auto">          
           <h1 className="md:text-6xl text-4xl lg:text-6xl font-bold text-center text-white mt-24">
