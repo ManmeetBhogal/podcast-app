@@ -17,6 +17,8 @@ export type NavItem = {
 export type GlassNavBarProps = {
   brand?: React.ReactNode;
   items?: NavItem[];
+  /* Optional call-to-action rendered after the links (e.g. the Donate pill) */
+  cta?: React.ReactNode;
   className?: string;
   fixed?: boolean;
   blurPx?: number;
@@ -26,10 +28,10 @@ export type GlassNavBarProps = {
 const GlassNavBar: React.FC<GlassNavBarProps> = ({
   brand,
   items = [
-    { label: "Home", href: "#home" },
     { label: "About", href: "#about" },
     { label: "Episodes", href: "#episodes" },
   ],
+  cta,
   className = "",
   fixed = true,
   blurPx = 40,
@@ -102,7 +104,7 @@ const GlassNavBar: React.FC<GlassNavBarProps> = ({
           {brand ?? (
             <button
               onClick={() => handleNav("#home")}
-              className="cursor-pointer flex items-center"
+              className="cursor-pointer flex items-center shrink-0"
               aria-label="Go to home"
             >
               <Image
@@ -126,14 +128,16 @@ const GlassNavBar: React.FC<GlassNavBarProps> = ({
                     if (item.external) window.open(item.href, "_blank");
                     else handleNav(item.href);
                   }}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+                  className="rounded-full px-3 sm:px-4 py-2 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95"
                 >
                   {item.label}
                 </button>
               </li>
             ))}
           </ul>
-          
+
+          {cta}
+
           {/* Inner ring highlight — fades in with the glass */}
           <span
             aria-hidden
