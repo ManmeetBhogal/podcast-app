@@ -27,7 +27,7 @@ export default function EpisodeDonateCard({ episodeNum }: { episodeNum?: string 
         <div className="flex-1 min-w-0">
           <p className="text-white/90 font-semibold">Enjoyed this episode?</p>
           <p className="text-white/60 text-sm font-light leading-relaxed">
-            brainSTEM is listener-supported. A small donation helps us keep making episodes like this one.
+            A small donation helps us keep making episodes like this one.
           </p>
         </div>
         <DonateButton placement={`episode-${episodeNum ?? "unknown"}`} className="self-start sm:self-auto flex-shrink-0">
