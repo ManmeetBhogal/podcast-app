@@ -4,15 +4,7 @@ import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { KOFI_URL } from "@/app/lib/donation";
 
-/* ──────────────────────── DONATE BUTTON ────────────────────────
- * The one "filled" button on the site. Everything else is clear glass, so the
- * aurora gradient (same stops as AuroraBackground) makes it the obvious CTA
- * without introducing a new colour.
- *   • gradient fill at 70% so the background still reads through
- *   • hairline white/30 border + top specular highlight = liquid-glass edge
- *   • always links to the Ko-fi page (KOFI_URL) in a new tab
- *   • data-umami-* attributes let Umami count clicks per placement
- */
+/* ──────────────────────── DONATE BUTTON ────────────────────────*/
 const SIZES = {
   md: "h-11 px-6 text-sm",
   lg: "h-14 px-8 text-base",

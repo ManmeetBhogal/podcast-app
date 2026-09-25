@@ -4,9 +4,6 @@ import { Heart } from "lucide-react";
 import { DonateButton } from "./DonateButton";
 
 /* ──────────────────────── EPISODE PAGE DONATE CARD ────────────────────────
- * A contextual ask at the end of an episode page — the moment someone has just
- * finished listening is when "enjoyed this?" lands best. Matches the Listen /
- * About glass cards above it and continues their staggered fade-up (delay 0.4).
  * The button goes to the same Ko-fi page as /support.
  */
 export default function EpisodeDonateCard({ episodeNum }: { episodeNum?: string }) {
