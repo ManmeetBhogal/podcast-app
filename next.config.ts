@@ -15,10 +15,14 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
+    const umamiUrl = process.env.UMAMI_URL?.trim();
+    if (!umamiUrl) return [];
+
+
     return [
       {
         source: "/stats/:path*",
-        destination: `${process.env.UMAMI_URL}/:path*`,
+        destination: `${umamiUrl}/:path*`,
       },
     ];
   },
