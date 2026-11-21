@@ -2,6 +2,7 @@ import Parser from 'rss-parser';
 
 
 const parser = new Parser();
+export const PODCAST_FEED_TAG = 'podcast-feed';
 
 export async function fetchPodcastFeed() {
     try {
@@ -13,9 +14,20 @@ export async function fetchPodcastFeed() {
         if (!podcastUrl) {
             throw new Error('Podcast RSS URL is not defined in environment variables');
         }
-        // Fetch the RSS XML using the WHATWG-compliant fetch() API,
-        // then parse the string 
-        const res = await fetch(podcastUrl);
+        
+        /* fetch rss feed with next.js ISR caching so new episodes appear automatically
+           without needing a redeploy:
+                - revalidate: cache for 15min, then refresh in background on the next visit
+                - tags: allows /api/revalidate to clear this cache immediately on demand
+                - signal: abort after 8s so a hanging RSS host doesn't stall the server */
+
+        const res = await fetch(podcastUrl, {
+            next: {
+                revalidate: 900, 
+                tags: [PODCAST_FEED_TAG],
+            },
+            signal: AbortSignal.timeout(8000),
+        });
         if (!res.ok) throw new Error(`Failed to fetch RSS feed: ${res.status}`);
         const xml = await res.text();
         const feed = await parser.parseString(xml);
