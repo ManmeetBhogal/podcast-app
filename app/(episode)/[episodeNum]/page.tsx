@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { Episode } from '@/app/lib/types';
 import { fetchPodcastFeed } from '@/app/lib/podcast';
 import EpisodePage from './EpisodePage';
@@ -6,22 +7,15 @@ import EpisodePage from './EpisodePage';
 type Params = Promise<{ episodeNum: string }>;
 
 async function getEpisodeData(episodeNum: string): Promise<Episode | null> {
-  try {
-    const podcast = await fetchPodcastFeed(); // Fetch the podcast data from the feed
-    if (!podcast) {
-      throw new Error('Podcast data is missing');
-    }
+  // Let RSS fetch errors throw so outages hit app/error.tsx (500)
+  // rather than being misreported as a 404 "episode not found".
+  const podcast = await fetchPodcastFeed();
 
-    // Find the episode that matches the episodeNum from the URL params
-    const foundEpisode = podcast.episodes.find(
-      (ep: Episode) => `episode-${ep.episodeNum}` === episodeNum
-    );
+  const foundEpisode = podcast.episodes.find(
+    (ep: Episode) => `episode-${ep.episodeNum}` === episodeNum
+  );
 
-    return foundEpisode || null;
-  } catch (error) {
-    console.error('Error in getEpisodeData:', error);
-    return null;
-  }
+  return foundEpisode || null;
 }
 
 export default async function Page({ params }: { params: Params }) {
@@ -30,7 +24,8 @@ export default async function Page({ params }: { params: Params }) {
   const episode = await getEpisodeData(episodeNum);
 
   if (!episode) {
-    return <div>Episode not found</div>;
+    // Sends a HTTP 404 status instead of rendering an error string with 200 OK
+    notFound();
   }
 
   return <EpisodePage episode={episode} />;
