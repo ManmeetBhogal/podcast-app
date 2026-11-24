@@ -23,10 +23,10 @@ The podcast team never has to touch the code or redeploy Vercel to update the si
 | **Episode Detail Pages** | Dedicated page per episode (`/episode-{num}`) with full description, custom audio player, platform links, and proper HTTP `404` handling |
 | **Custom Audio Player** | Hand-built player with play/pause, scrubbing, time display, and playback speed control (0.75×–2×) |
 | **Support / Donations Page** | Dedicated `/support` page and episode donate cards powered by Ko-fi |
-| **Glass Morphism UI** | Frosted-glass cards and navbar styled after iOS liquid glass — `bg-white/5 backdrop-blur-xl` with hairline borders |
+| **Glass Morphism UI** | Frosted-glass episode and support cards using `bg-white/5 backdrop-blur-xl` with hairline borders |
 | **WebGL Aurora Background** | Full-screen animated aurora effect powered by `ogl` (WebGL) with an `IntersectionObserver` to pause rendering off-screen |
 | **Plasma Background** | Particle-based animated background in the team section using `@tsparticles` |
-| **Scroll-Aware Navbar** | Transparent at the top of the page; transitions to a frosted glass pill after 80px of scroll |
+| **Scroll-Aware Masthead Navbar** | Fixed top editorial masthead with a soft top scrim over the hero, transitioning to a frosted dark bar after 64px of scroll, with active route/scroll-spy indicators on desktop and a smooth downward reveal drawer on mobile |
 | **Team / About Section** | Profiles for each podcast team member with headshots, roles, and bios |
 | **Platform Links** | Badges linking to Spotify, Apple Podcasts, Pocket Casts, and YouTube |
 | **Privacy-Friendly Analytics** | Optional Umami analytics script proxied through `/stats/*` when `UMAMI_URL` is configured |
@@ -151,6 +151,7 @@ app/
 
 components/
   donate/           # Ko-fi donation buttons and support page sections
+  nav/              # Shared navigation routes and scroll-spy controller
   ui/               # Reusable UI (AuroraBackground, GlassNavBar, PlasmaBackground)
   TeamMember.tsx    # Team section
   PodcastPlatforms.tsx  # Platform badge row

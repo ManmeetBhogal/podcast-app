@@ -7,7 +7,6 @@ import Link from "next/link";
 import { SiSpotify, SiApplepodcasts, SiPocketcasts, SiYoutube } from "react-icons/si";
 import AudioPlayer from "@/app/ui/AudioPlayer";
 import { formatDateLong } from "@/app/lib/utils";
-import NavDonateButton from "@/components/donate/NavDonateButton";
 import EpisodeDonateCard from "@/components/donate/EpisodeDonateCard";
 
 interface EpisodePageProps {
@@ -34,7 +33,7 @@ export default function EpisodePage({ episode }: EpisodePageProps) {
       </div>
 
       {/* ── Navbar ── */}
-      <GlassNavBar cta={<NavDonateButton />} />
+      <GlassNavBar />
 
       {/* ── Main content ── */}
       <main className="relative z-10 flex flex-col items-center px-4 pt-32 pb-20">
