@@ -1,154 +1,300 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
-  animate,
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
   useScroll,
-  useMotionValueEvent
 } from "framer-motion";
-
-/* ──────────────────────── TYPES ──────────────────────── */
-export type NavItem = {
-  label: string;
-  href: string;
-  external?: boolean;
-};
+import { Heart, Menu, X } from "lucide-react";
+import { SITE_NAV_LINKS, useNavController } from "@/components/nav/navData";
 
 export type GlassNavBarProps = {
-  brand?: React.ReactNode;
-  items?: NavItem[];
-  /* Optional call-to-action rendered after the links (e.g. the Donate pill) */
-  cta?: React.ReactNode;
   className?: string;
-  fixed?: boolean;
-  blurPx?: number;
 };
 
-/* ──────────────────────── COMPONENT ──────────────────────── */
-const GlassNavBar: React.FC<GlassNavBarProps> = ({
-  brand,
-  items = [
-    { label: "About", href: "#about" },
-    { label: "Episodes", href: "#episodes" },
-  ],
-  cta,
-  className = "",
-  fixed = true,
-  blurPx = 40,
-}) => {
-  const pathname = usePathname();
-  const router = useRouter();
+const EASE: [number, number, number, number] = [0.32, 0.72, 0, 1];
+
+/* ──────────────────────── EDITORIAL MASTHEAD NAVBAR ────────────────────────
+ * - Seamless two-layer surface: tall top Aurora scrim cross-fades into a frosted
+ *   dark bar on scroll/open (no hard border seam over the Aurora hero).
+ * - Desktop (md+): aligned to max-w-4xl with real <Link> routes, active white
+ *   underline (including Home scroll-spy and /episode-*), and subtle Support pill.
+ * - Mobile (< md): icon-only morphing hamburger/X toggle expands a smooth downward
+ *   drawer while keeping page contents visible underneath (closes on scroll, tap
+ *   outside, or Escape).
+ */
+const GlassNavBar: React.FC<GlassNavBarProps> = ({ className = "" }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const { pathname, activeKey, handleLinkClick, handleBrandClick } = useNavController();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const openScrollYRef = useRef(0);
 
-  /* ── 1. Fade-to-glass on scroll ──
-   * Below 80px (still in the hero): nav is fully transparent, blending into the aurora background.
-   * Past 80px: transitions to the frosted-glass pill so it's readable over content. */
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setScrolled(latest > 80);
+    setScrolled(latest > 64);
+    /* Close drawer naturally if the user scrolls the visible page underneath */
+    if (menuOpen && Math.abs(latest - openScrollYRef.current) > 16) {
+      setMenuOpen(false);
+    }
   });
 
-  /* ── 2. Navigation helper ──
-   * On the home page: smooth-scroll to the anchor.
-   * On any other page: navigate to /#anchor and let the browser scroll on load. */
-  const handleNav = (href: string) => {
-    if (pathname === "/") {
-      const target = document.querySelector(href) as HTMLElement;
-      if (!target) return;
-      const targetY = target.getBoundingClientRect().top + window.scrollY - 100;
-      animate(window.scrollY, targetY, {
-        duration: 0.8,
-        ease: [0.6, 0.05, 0.01, 0.9],
-        onUpdate: (value) => window.scrollTo(0, value),
-      });
-    } else {
-      router.push(`/${href}`);
-    }
-  };
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    openScrollYRef.current = window.scrollY;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
+
+  const primaryLinks = SITE_NAV_LINKS.filter((l) => l.key !== "support");
+  const supportLink = SITE_NAV_LINKS.find((l) => l.key === "support")!;
+  const showSolid = scrolled || menuOpen;
 
   return (
-    /* Always visible — no slide-up/down. Positioning only. */
-    <div
-      className={[
-        fixed ? "fixed top-6 inset-x-0 z-50" : "relative z-50",
-        "flex justify-center pointer-events-none font-[Figtree,sans-serif]",
-        className,
-      ].join(" ")}
-    >
-      <div className="pointer-events-auto relative">
-        {/* Outer glow — fades in with the glass pill once scrolled */}
-        <div
-          className="absolute -inset-1 rounded-full blur-lg transition-opacity duration-500"
-          style={{ opacity: scrolled ? 0.4 : 0 }}
-          aria-hidden
-        >
-          <div className="h-full w-full rounded-full bg-[radial-gradient(120%_180%_at_50%_-30%,rgba(255,255,255,0.15),transparent_60%)]" />
-        </div>
+    <>
+      {/* Subtle scrim below header only so page content stays visible underneath */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            aria-hidden
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setMenuOpen(false)}
+            className="md:hidden fixed inset-0 z-40 bg-[#060010]/30"
+          />
+        )}
+      </AnimatePresence>
 
-        {/* Main Nav
-         * At top of page:  transparent bg, invisible border, no shadow, no blur
-         * After 80px scroll: full glass pill fades in via CSS transitions on each property */}
+      <header className={`fixed top-0 inset-x-0 z-50 font-[Figtree,sans-serif] ${className}`}>
+        {/* Layer 1: Tall top Aurora scrim (extends past header so it never leaves a seam) */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#060010]/65 via-[#060010]/20 to-transparent bg-no-repeat transition-opacity duration-300 ${
+            showSolid ? "opacity-0" : "opacity-100"
+          }`}
+        />
+
+        {/* Layer 2: Continuous dark frosted surface for scrolled & open states */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 bg-[#060010]/[0.88] backdrop-blur-xl shadow-[0_12px_32px_-16px_rgba(0,0,0,0.85)] transition-opacity duration-300 ${
+            showSolid ? "opacity-100" : "opacity-0"
+          }`}
+        />
+
+        {/* Subtle faded bottom hairline only when scrolled or open */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity duration-300 ${
+            showSolid ? "opacity-100" : "opacity-0"
+          }`}
+        />
+
+        {/* Main 64px top bar */}
         <nav
           aria-label="Primary"
-          className="relative flex items-center rounded-full w-[min(92vw,1100px)] h-14 px-6 transition-[background-color,border-color,box-shadow] duration-500"
-          style={{
-            backgroundColor: scrolled ? "rgba(255,255,255,0.05)" : "transparent",
-            border: scrolled ? "0.5px solid rgba(255,255,255,0.35)" : "0.5px solid transparent",
-            boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.25)" : "none",
-            /* backdrop-filter can't be CSS-transitioned in all browsers, so we swap it discretely */
-            WebkitBackdropFilter: scrolled ? `blur(${blurPx}px) saturate(1.3)` : "none",
-            backdropFilter: scrolled ? `blur(${blurPx}px) saturate(1.3)` : "none",
-          }}
+          className="relative z-10 mx-auto max-w-4xl h-16 px-5 sm:px-8 flex items-center justify-between gap-4"
         >
-          {/* Brand */}
-          {brand ?? (
-            <button
-              onClick={() => handleNav("#home")}
-              className="cursor-pointer flex items-center shrink-0"
-              aria-label="Go to home"
+          <Link
+            href="/"
+            onClick={(e) => handleBrandClick(e, () => setMenuOpen(false))}
+            className="inline-flex items-center gap-2.5 text-white hover:opacity-90 transition-opacity shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] rounded-md"
+          >
+            <Image
+              src="/BrainSTEM_Transparent_NoText.png"
+              alt=""
+              width={30}
+              height={30}
+              className="object-contain w-7 h-7"
+            />
+            <span className="text-[15px] font-semibold tracking-tight text-white">
+              brainSTEM
+            </span>
+          </Link>
+
+          {/* Desktop Navigation (md+) */}
+          <div className="hidden md:flex items-center gap-7">
+            <ul className="flex items-center gap-6">
+              {primaryLinks.map((link) => {
+                const isActive = activeKey === link.key;
+                return (
+                  <li key={link.key}>
+                    <Link
+                      href={link.href}
+                      aria-current={isActive ? "page" : undefined}
+                      onClick={(e) => handleLinkClick(e, link)}
+                      className={`relative py-2 text-sm font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] rounded-sm ${
+                        isActive ? "text-white" : "text-white/65 hover:text-white"
+                      }`}
+                    >
+                      {link.label}
+                      {isActive && (
+                        <motion.span
+                          layoutId="masthead-active-underline"
+                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                          className="absolute inset-x-0 -bottom-0.5 h-[1.5px] bg-white rounded-full"
+                        />
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <Link
+              href={supportLink.href}
+              aria-current={activeKey === "support" ? "page" : undefined}
+              onClick={(e) => handleLinkClick(e, supportLink)}
+              className={[
+                "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6]",
+                activeKey === "support"
+                  ? "border-white/45 bg-white/10 text-white"
+                  : "border-white/20 text-white/80 hover:border-white/45 hover:bg-white/[0.06] hover:text-white",
+              ].join(" ")}
             >
-              <Image
-                src="/BrainSTEM_Transparent_NoText.png"
-                alt="brainSTEM logo"
-                width={36}
-                height={36}
-                className="object-contain w-9 h-9"
+              <Heart
+                className={`w-3.5 h-3.5 transition-colors ${
+                  activeKey === "support"
+                    ? "text-[#F566FF] fill-[#F566FF]"
+                    : "text-[#F566FF]/85"
+                }`}
+                aria-hidden
               />
-            </button>
-          )}
+              <span>Support</span>
+            </Link>
+          </div>
 
-          <div className="flex-1" />
-
-          {/* Links */}
-          <ul className="flex items-center gap-2">
-            {items.map((item) => (
-              <li key={item.label}>
-                <button
-                  onClick={() => {
-                    if (item.external) window.open(item.href, "_blank");
-                    else handleNav(item.href);
-                  }}
-                  className="rounded-full px-3 sm:px-4 py-2 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+          {/* Mobile Icon-Only Morphing Toggle (< md) */}
+          <button
+            ref={triggerRef}
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="masthead-drawer"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="md:hidden relative inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-full text-white/85 hover:bg-white/10 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6]"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {menuOpen ? (
+                <motion.span
+                  key="close"
+                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: 90 }}
+                  transition={{ duration: 0.16, ease: "easeOut" }}
                 >
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {cta}
-
-          {/* Inner ring highlight — fades in with the glass */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-full ring-[0.5px] ring-inset ring-white/30 transition-opacity duration-500"
-            style={{
-              opacity: scrolled ? 1 : 0,
-            }}
-          />
+                  <X className="w-5 h-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="menu"
+                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotate: 90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: -90 }}
+                  transition={{ duration: 0.16, ease: "easeOut" }}
+                >
+                  <Menu className="w-5 h-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
         </nav>
-      </div>
-    </div>
+
+        {/* Mobile Smooth Downward Reveal Drawer (< md) */}
+        <AnimatePresence initial={false}>
+          {menuOpen && (
+            <motion.div
+              id="masthead-drawer"
+              initial={prefersReducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : {
+                      height: 0,
+                      opacity: 0,
+                      transition: {
+                        height: { duration: 0.24, ease: EASE },
+                        opacity: { duration: 0.14 },
+                      },
+                    }
+              }
+              transition={{ height: { duration: 0.3, ease: EASE }, opacity: { duration: 0.2 } }}
+              className="md:hidden relative z-10 overflow-hidden"
+            >
+              <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+                <div className="mx-5 h-px bg-white/10" aria-hidden />
+                <nav aria-label="Mobile" className="px-5 pt-1 pb-3">
+                  <ul className="divide-y divide-white/[0.06]">
+                    {SITE_NAV_LINKS.map((link, idx) => {
+                      const isActive = activeKey === link.key;
+                      const isSupport = link.key === "support";
+                      return (
+                        <motion.li
+                          key={link.key}
+                          initial={prefersReducedMotion ? false : { opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.18,
+                            delay: prefersReducedMotion ? 0 : 0.03 + idx * 0.025,
+                            ease: EASE,
+                          }}
+                        >
+                          <Link
+                            href={link.href}
+                            aria-current={isActive ? "page" : undefined}
+                            onClick={(e) => handleLinkClick(e, link, () => setMenuOpen(false))}
+                            className={`flex items-center justify-start gap-2 min-h-11 py-2.5 text-[15px] leading-5 font-medium tracking-tight transition-colors ${
+                              isActive ? "text-white" : "text-white/70 hover:text-white"
+                            }`}
+                          >
+                            <span>{link.label}</span>
+                            {isSupport ? (
+                              <Heart
+                                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                                  isActive
+                                    ? "text-[#F566FF] fill-[#F566FF]"
+                                    : "text-[#F566FF]/85"
+                                }`}
+                                aria-hidden
+                              />
+                            ) : (
+                              isActive && (
+                                <span
+                                  aria-hidden
+                                  className="w-1.5 h-1.5 rounded-full bg-[#F566FF] shrink-0"
+                                />
+                              )
+                            )}
+                          </Link>
+                        </motion.li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+    </>
   );
 };
 

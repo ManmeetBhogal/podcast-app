@@ -7,7 +7,6 @@ import { SiApplepodcasts, SiSpotify } from "react-icons/si";
 import GlassNavBar from "@/components/ui/glassNavBar";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 import BlurText from "@/components/BlurText";
-import NavDonateButton from "./NavDonateButton";
 
 /* ──────────────────────── SHARED /support BUILDING BLOCKS ────────────────────────
  * The pieces of the /support page: page frame, hero, glowing ask card,
@@ -32,7 +31,7 @@ export function SupportShell({ children }: { children: React.ReactNode }) {
         <AuroraBackground />
       </div>
 
-      <GlassNavBar cta={<NavDonateButton />} />
+      <GlassNavBar />
 
       <main className="relative z-10 flex flex-col items-center px-4 pt-32 pb-20">
         <div className="w-full max-w-3xl flex flex-col gap-6">
