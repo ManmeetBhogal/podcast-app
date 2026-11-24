@@ -60,6 +60,30 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+  		keyframes: {
+  			'guest-rise': {
+  				from: { opacity: '0', transform: 'translateY(12px)' },
+  				to: { opacity: '1', transform: 'none' },
+  			},
+  			'guest-rise-sm': {
+  				from: { opacity: '0', transform: 'translateY(10px)' },
+  				to: { opacity: '1', transform: 'none' },
+  			},
+  			'guest-slide-x': {
+  				from: { opacity: '0', transform: 'translateX(-8px)' },
+  				to: { opacity: '1', transform: 'none' },
+  			},
+  			'guest-fade': {
+  				from: { opacity: '0' },
+  				to: { opacity: '1' },
+  			},
+  		},
+  		animation: {
+  			'guest-rise': 'guest-rise 500ms cubic-bezier(0.33, 1, 0.68, 1) backwards',
+  			'guest-rise-sm': 'guest-rise-sm 460ms cubic-bezier(0.33, 1, 0.68, 1) backwards',
+  			'guest-slide-x': 'guest-slide-x 420ms cubic-bezier(0.33, 1, 0.68, 1) backwards',
+  			'guest-fade': 'guest-fade 460ms cubic-bezier(0.33, 1, 0.68, 1) backwards',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
