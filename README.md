@@ -23,6 +23,7 @@ The podcast team never has to touch the code or redeploy Vercel to update the si
 | **Episode Detail Pages** | Dedicated page per episode (`/episode-{num}`) with full description, custom audio player, platform links, and proper HTTP `404` handling |
 | **Custom Audio Player** | Hand-built player with play/pause, scrubbing, time display, and playback speed control (0.75×–2×) |
 | **Support / Donations Page** | Dedicated `/support` page and episode donate cards powered by Ko-fi |
+| **Be a Guest Page** | Dedicated `/be-a-guest` guest interest page linking to Wayne State Qualtrics |
 | **Glass Morphism UI** | Frosted-glass episode and support cards using `bg-white/5 backdrop-blur-xl` with hairline borders |
 | **WebGL Aurora Background** | Full-screen animated aurora effect powered by `ogl` (WebGL) with an `IntersectionObserver` to pause rendering off-screen |
 | **Plasma Background** | Particle-based animated background in the team section using `@tsparticles` |
@@ -98,6 +99,7 @@ npm run dev   # http://localhost:3000
 | `PODCAST_RSS_URL` | Full URL of the podcast RSS feed | Yes |
 | `REVALIDATE_SECRET` | Secret token required in the `x-revalidate-secret` header for `POST /api/revalidate` | For on-demand webhook |
 | `NEXT_PUBLIC_KOFI_USERNAME` | Ko-fi username used for donation links on `/support` and episode pages | No |
+| `NEXT_PUBLIC_GUEST_FORM_URL` | Full URL of the guest interest form linked from `/be-a-guest` | No |
 | `UMAMI_URL` | Base URL for Umami analytics proxied at `/stats/:path*` (skipped cleanly when unset) | No |
 
 Create a `.env.local` file for local development:
@@ -106,6 +108,7 @@ Create a `.env.local` file for local development:
 PODCAST_RSS_URL=https://anchor.fm/s/493495d8/podcast/rss
 REVALIDATE_SECRET=your-local-test-secret
 NEXT_PUBLIC_KOFI_USERNAME=
+NEXT_PUBLIC_GUEST_FORM_URL=
 UMAMI_URL=
 ```
 
@@ -142,7 +145,8 @@ app/
       route.ts      # POST /api/revalidate on-demand ISR cache invalidation
   (episode)/
     [episodeNum]/   # Dynamic episode detail route (/episode-{num})
-  lib/              # RSS fetching/parsing, donation config, types, shared utilities
+  be-a-guest/       # /be-a-guest guest interest page
+  lib/              # RSS fetching/parsing, donation & guest config, types, shared utilities
   support/          # /support donation page
   ui/               # App-specific components (episode cards, audio player, title)
   error.tsx         # Route Error Boundary fallback
@@ -151,6 +155,7 @@ app/
 
 components/
   donate/           # Ko-fi donation buttons and support page sections
+  guest/            # /be-a-guest page copy and structured content
   nav/              # Shared navigation routes and scroll-spy controller
   ui/               # Reusable UI (AuroraBackground, GlassNavBar, PlasmaBackground)
   TeamMember.tsx    # Team section

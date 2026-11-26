@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { animate } from "framer-motion";
 
-export type NavKey = "about" | "episodes" | "support";
+export type NavKey = "about" | "episodes" | "guest" | "support";
 
 export interface SiteNavLink {
   key: NavKey;
@@ -15,6 +15,7 @@ export interface SiteNavLink {
 export const SITE_NAV_LINKS: SiteNavLink[] = [
   { key: "about", label: "About", href: "/#about", hash: "#about" },
   { key: "episodes", label: "Episodes", href: "/#episodes", hash: "#episodes" },
+  { key: "guest", label: "Be a Guest", href: "/be-a-guest" },
   { key: "support", label: "Support", href: "/support" },
 ];
 
@@ -58,6 +59,7 @@ export function useNavController() {
   }, [pathname]);
 
   const activeKey: NavKey | null = (() => {
+    if (pathname === "/be-a-guest") return "guest";
     if (pathname === "/support") return "support";
     if (pathname.startsWith("/episode-")) return "episodes";
     if (pathname === "/") return homeSection;
