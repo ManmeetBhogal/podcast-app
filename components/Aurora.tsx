@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+"use client";
+import { useEffect, useMemo, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 
 // --- Shaders ---
@@ -54,6 +55,8 @@ void main() {
 }
 `;
 
+const DEFAULT_COLOR_STOPS = ['#5227FF', '#7cff67', '#5227FF'];
+
 interface AuroraProps {
   colorStops?: string[];
   amplitude?: number;
@@ -68,83 +71,191 @@ function hexToRgbNormalized(hex: string): [number, number, number] {
 }
 
 export default function Aurora({
-  colorStops = ['#5227FF', '#7cff67', '#5227FF'],
+  colorStops = DEFAULT_COLOR_STOPS,
   amplitude = 1.0,
   blend = 0.5,
   speed = 1.0
 }: AuroraProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
-  const [shouldRender, setShouldRender] = useState(false);
-  const normalizedStops = useMemo(() => colorStops.map(hexToRgbNormalized), [colorStops]);
+  const programRef = useRef<Program | null>(null);
+  const renderOnceRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      setShouldRender(entry.isIntersecting);
-    }, { threshold: 0.05 });
-    if (ctnDom.current) observer.observe(ctnDom.current);
-    return () => observer.disconnect();
-  }, []);
+  const colorStopsKey = colorStops.join(',');
+  const normalizedStops = useMemo(
+    () => colorStopsKey.split(',').map(hexToRgbNormalized),
+    [colorStopsKey],
+  );
 
+  const propsRef = useRef({ normalizedStops, amplitude, blend, speed });
+
+  /* Keep WebGL uniforms in sync with props without tearing down the canvas/context */
   useEffect(() => {
-    if (!shouldRender || !ctnDom.current) return;
+    propsRef.current = { normalizedStops, amplitude, blend, speed };
+    const program = programRef.current;
+    if (program) {
+      program.uniforms.uColorStops.value = normalizedStops;
+      program.uniforms.uAmplitude.value = amplitude;
+      program.uniforms.uBlend.value = blend;
+      renderOnceRef.current?.();
+    }
+  }, [normalizedStops, amplitude, blend, speed]);
+
+  /* Create the WebGL renderer once on mount; pause/resume rAF when off-screen or hidden */
+  useEffect(() => {
     const ctn = ctnDom.current;
+    if (!ctn) return;
+
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const performanceDPR = isMobile ? 0.8 : Math.min(window.devicePixelRatio, 2);
 
     const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: false, dpr: performanceDPR });
     const gl = renderer.gl;
+    gl.clearColor(0, 0, 0, 0);
+
     const canvas = gl.canvas as HTMLCanvasElement;
     canvas.style.cssText = 'display:block; width:100%; height:100%; pointer-events:none;';
-    ctn.appendChild(canvas);
 
+    const initial = propsRef.current;
     const program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
         uTime: { value: 0 },
-        uAmplitude: { value: amplitude },
-        uColorStops: { value: normalizedStops },
+        uAmplitude: { value: initial.amplitude },
+        uColorStops: { value: initial.normalizedStops },
         uResolution: { value: [1, 1] },
-        uBlend: { value: blend }
+        uBlend: { value: initial.blend }
       }
     });
+    programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
+
+    let isIntersecting = true;
+    let isContextLost = false;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let reducedMotion = motionQuery.matches;
+    let animateId: number | null = null;
+    let resizeRafId: number | null = null;
+
     const resize = () => {
-      renderer.setSize(ctn.clientWidth, ctn.clientHeight);
+      if (isContextLost) return;
+      const width = Math.max(ctn.clientWidth, 1);
+      const height = Math.max(ctn.clientHeight, 1);
+      renderer.setSize(width, height);
       program.uniforms.uResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
     };
 
-    const ro = new ResizeObserver(() => window.requestAnimationFrame(resize));
-    ro.observe(ctn);
-    resize();
-
-    let animateId: number;
-    const update = (t: number) => {
-      program.uniforms.uTime.value = t * 0.0005 * speed;
+    const renderFrame = (t: number) => {
+      if (isContextLost) return;
+      program.uniforms.uTime.value = t * 0.0005 * propsRef.current.speed;
       renderer.render({ scene: mesh });
+    };
+
+    const shouldLoop = () => isIntersecting && !document.hidden && !reducedMotion && !isContextLost;
+
+    const update = (t: number) => {
+      animateId = null;
+      if (!shouldLoop()) return;
+      renderFrame(t);
       animateId = requestAnimationFrame(update);
     };
-    animateId = requestAnimationFrame(update);
+
+    const startLoop = () => {
+      if (animateId !== null || !shouldLoop()) return;
+      animateId = requestAnimationFrame(update);
+    };
+
+    const stopLoop = () => {
+      if (animateId !== null) {
+        cancelAnimationFrame(animateId);
+        animateId = null;
+      }
+    };
+
+    const syncLoop = () => {
+      if (shouldLoop()) startLoop();
+      else stopLoop();
+    };
+
+    renderOnceRef.current = () => {
+      if (!shouldLoop()) renderFrame(performance.now());
+    };
+
+    /* Render one frame synchronously before attaching so Chrome never composites an empty canvas */
+    resize();
+    renderFrame(performance.now());
+    ctn.appendChild(canvas);
+
+    const ro = new ResizeObserver(() => {
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        resizeRafId = null;
+        resize();
+        if (!shouldLoop()) renderFrame(performance.now());
+      });
+    });
+    ro.observe(ctn);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isIntersecting = entry.isIntersecting;
+        syncLoop();
+      },
+      { threshold: 0.05 },
+    );
+    observer.observe(ctn);
+
+    const onVisibilityChange = () => syncLoop();
+    const onMotionChange = (e: MediaQueryListEvent) => {
+      reducedMotion = e.matches;
+      syncLoop();
+    };
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      isContextLost = true;
+      stopLoop();
+    };
+    const onContextRestored = () => {
+      isContextLost = false;
+      resize();
+      renderFrame(performance.now());
+      syncLoop();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    motionQuery.addEventListener('change', onMotionChange);
+    canvas.addEventListener('webglcontextlost', onContextLost);
+    canvas.addEventListener('webglcontextrestored', onContextRestored);
+
+    syncLoop();
 
     return () => {
-      cancelAnimationFrame(animateId);
+      stopLoop();
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+      observer.disconnect();
       ro.disconnect();
-      if (canvas.parentNode) ctn.removeChild(canvas);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      motionQuery.removeEventListener('change', onMotionChange);
+      canvas.removeEventListener('webglcontextlost', onContextLost);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored);
+      programRef.current = null;
+      renderOnceRef.current = null;
+      if (canvas.parentNode === ctn) ctn.removeChild(canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [shouldRender, normalizedStops, amplitude, blend, speed]);
+  }, []);
 
   return (
-    <div 
-      ref={ctnDom} 
-      className="w-full h-full relative overflow-hidden" 
+    <div
+      ref={ctnDom}
+      className="w-full h-full relative overflow-hidden"
       tabIndex={-1}
-      style={{ 
-        outline: 'none', 
-        contain: 'paint size layout', 
+      style={{
+        outline: 'none',
+        contain: 'paint size layout',
         pointerEvents: 'none',
-        WebkitContain: 'paint size layout' 
+        WebkitContain: 'paint size layout'
       } as React.CSSProperties}
     />
   );

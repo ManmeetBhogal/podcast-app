@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Minus, Plus } from "lucide-react";
 import GlassNavBar from "@/components/ui/glassNavBar";
 import AuroraBackground from "@/components/ui/AuroraBackground";
@@ -13,13 +13,19 @@ import {
   PROCESS_STEPS,
 } from "@/components/guest/guestContent";
 
-export default function BeAGuestPage() {
+function GuestVoicesTabs() {
   const prefersReducedMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [openQa, setOpenQa] = useState<number | null>(null);
+  const [hasSwitched, setHasSwitched] = useState(false);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const active = PERSPECTIVES[activeIndex] ?? PERSPECTIVES[0];
+
+  const selectTab = (idx: number) => {
+    if (idx === activeIndex) return;
+    setHasSwitched(true);
+    setActiveIndex(idx);
+  };
 
   const handleTabKeyDown = (e: React.KeyboardEvent, idx: number) => {
     let nextIdx: number | null = null;
@@ -35,11 +41,180 @@ export default function BeAGuestPage() {
 
     if (nextIdx !== null) {
       e.preventDefault();
-      setActiveIndex(nextIdx);
+      selectTab(nextIdx);
       tabRefs.current[nextIdx]?.focus();
     }
   };
 
+  return (
+    <div className="md:col-span-8 flex flex-col gap-5 min-w-0">
+      {/* Subtle active pills below sm (safe when wrapping); crisp white underline at sm+ */}
+      <LayoutGroup id="guest-tabs">
+        <div
+          className="flex flex-wrap items-center gap-2 sm:gap-x-6 sm:gap-y-0 sm:border-b sm:border-white/15"
+          role="tablist"
+          aria-label="Voices we welcome"
+        >
+          {PERSPECTIVES.map((item, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <button
+                key={item.id}
+                ref={(el) => {
+                  tabRefs.current[idx] = el;
+                }}
+                id={`guest-tab-${item.id}`}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`guest-panel-${item.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => selectTab(idx)}
+                onKeyDown={(e) => handleTabKeyDown(e, idx)}
+                className={[
+                  "relative min-h-[44px] flex items-center text-sm font-medium whitespace-nowrap transition-colors cursor-pointer",
+                  "rounded-full border px-3.5 sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:pb-2.5",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] sm:focus-visible:rounded-sm",
+                  isActive
+                    ? "bg-white/15 border-white/30 text-white"
+                    : "bg-white/[0.03] border-white/15 text-white/60 hover:text-white/90 sm:text-white/55 sm:hover:text-white/90",
+                ].join(" ")}
+              >
+                {item.label}
+                {isActive && (
+                  <motion.span
+                    layoutId="guest-tab-underline"
+                    style={{ borderRadius: 9999 }}
+                    transition={
+                      prefersReducedMotion
+                        ? { duration: 0 }
+                        : { duration: 0.25, ease: [0.22, 1, 0.36, 1] }
+                    }
+                    className="hidden sm:block absolute inset-x-0 -bottom-px h-[2px] bg-white"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </LayoutGroup>
+
+      {/* CSS Grid sizer prevents vertical jump when switching tabs */}
+      <div className="grid">
+        {PERSPECTIVES.map((item) => (
+          <div
+            key={`sizer-${item.id}`}
+            aria-hidden
+            className="col-start-1 row-start-1 invisible select-none pointer-events-none flex flex-col gap-4"
+          >
+            <p className="text-base font-light leading-relaxed">{item.summary}</p>
+            <div className="flex flex-wrap gap-2">
+              {item.topics.map((topic) => (
+                <span
+                  key={topic}
+                  className="rounded-xl sm:rounded-full border border-transparent px-3 py-1 text-xs font-light"
+                >
+                  {topic}
+                </span>
+              ))}
+            </div>
+            <p className="text-xs font-light">{item.uploadNote}</p>
+          </div>
+        ))}
+
+        <div
+          id={`guest-panel-${active.id}`}
+          role="tabpanel"
+          aria-labelledby={`guest-tab-${active.id}`}
+          className="col-start-1 row-start-1"
+        >
+          <motion.div
+            key={active.id}
+            initial={prefersReducedMotion || !hasSwitched ? false : { opacity: 0.72, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.16, ease: [0.33, 1, 0.68, 1] }
+            }
+            className="flex flex-col gap-4"
+          >
+            <p className="text-base text-white/80 font-light leading-relaxed">
+              {active.summary}
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {active.topics.map((topic) => (
+                <span
+                  key={topic}
+                  className="rounded-xl sm:rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs text-white/70 font-light"
+                >
+                  {topic}
+                </span>
+              ))}
+            </div>
+
+            <p className="text-xs text-white/55 font-light">
+              {active.uploadNote}
+            </p>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GuestQaList() {
+  const prefersReducedMotion = useReducedMotion();
+  const [openQa, setOpenQa] = useState<number | null>(null);
+
+  return (
+    <div className="md:col-span-8 divide-y divide-white/10">
+      {GUEST_QA.map((item, idx) => {
+        const isOpen = openQa === idx;
+        const answerId = `guest-qa-answer-${idx}`;
+        return (
+          <div key={item.q}>
+            <button
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={answerId}
+              onClick={() => setOpenQa(isOpen ? null : idx)}
+              className={`w-full min-h-11 py-4 ${
+                idx === 0 ? "md:pt-0" : ""
+              } flex items-start justify-between gap-4 text-left group cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] focus-visible:text-white`}
+            >
+              <span className="text-sm sm:text-base font-medium text-white/90 group-hover:text-white transition-colors">
+                {item.q}
+              </span>
+              <span className="mt-0.5 text-white/55 group-hover:text-white transition-colors flex-shrink-0">
+                {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  id={answerId}
+                  initial={prefersReducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                  className="overflow-hidden"
+                >
+                  <p className="pb-4 pr-8 text-sm text-white/65 font-light leading-relaxed">
+                    {item.a}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function BeAGuestPage() {
   return (
     <div className="min-h-screen w-full bg-[#060010] text-white relative overflow-x-clip">
       {/* Top-only faded Aurora matching /, /support, and /episode-* */}
@@ -125,112 +300,7 @@ export default function BeAGuestPage() {
             </p>
           </div>
 
-          <div className="md:col-span-8 flex flex-col gap-5 min-w-0">
-            {/* Subtle active pills below sm (safe when wrapping); crisp white underline at sm+ */}
-            <div
-              className="flex flex-wrap items-center gap-2 sm:gap-x-6 sm:gap-y-0 sm:border-b sm:border-white/15"
-              role="tablist"
-              aria-label="Voices we welcome"
-            >
-              {PERSPECTIVES.map((item, idx) => {
-                const isActive = idx === activeIndex;
-                return (
-                  <button
-                    key={item.id}
-                    ref={(el) => {
-                      tabRefs.current[idx] = el;
-                    }}
-                    id={`guest-tab-${item.id}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    aria-controls={`guest-panel-${item.id}`}
-                    tabIndex={isActive ? 0 : -1}
-                    onClick={() => setActiveIndex(idx)}
-                    onKeyDown={(e) => handleTabKeyDown(e, idx)}
-                    className={[
-                      "relative min-h-[44px] flex items-center text-sm font-medium whitespace-nowrap transition-colors cursor-pointer",
-                      "rounded-full border px-3.5 sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:pb-2.5",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] sm:focus-visible:rounded-sm",
-                      isActive
-                        ? "bg-white/15 border-white/30 text-white"
-                        : "bg-white/[0.03] border-white/15 text-white/60 hover:text-white/90 sm:text-white/55 sm:hover:text-white/90",
-                    ].join(" ")}
-                  >
-                    {item.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="guest-tab-underline"
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                        className="hidden sm:block absolute inset-x-0 -bottom-px h-[2px] bg-white rounded-full"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* CSS Grid sizer prevents vertical jump when switching tabs */}
-            <div className="grid">
-              {PERSPECTIVES.map((item) => (
-                <div
-                  key={`sizer-${item.id}`}
-                  aria-hidden
-                  className="col-start-1 row-start-1 invisible select-none pointer-events-none flex flex-col gap-4"
-                >
-                  <p className="text-base font-light leading-relaxed">{item.summary}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {item.topics.map((topic) => (
-                      <span
-                        key={topic}
-                        className="rounded-xl sm:rounded-full border px-3 py-1 text-xs font-light"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-xs font-light">{item.uploadNote}</p>
-                </div>
-              ))}
-
-              <div
-                id={`guest-panel-${active.id}`}
-                role="tabpanel"
-                aria-labelledby={`guest-tab-${active.id}`}
-                className="col-start-1 row-start-1"
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={active.id}
-                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -5 }}
-                    transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="flex flex-col gap-4"
-                  >
-                    <p className="text-base text-white/80 font-light leading-relaxed">
-                      {active.summary}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {active.topics.map((topic) => (
-                        <span
-                          key={topic}
-                          className="rounded-xl sm:rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs text-white/70 font-light"
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-
-                    <p className="text-xs text-white/55 font-light">
-                      {active.uploadNote}
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
+          <GuestVoicesTabs />
         </section>
 
         {/* Process steps: visually straight into 01 / 02 / 03, sr-only heading for screen readers */}
@@ -274,48 +344,7 @@ export default function BeAGuestPage() {
             </h2>
           </div>
 
-          <div className="md:col-span-8 divide-y divide-white/10">
-            {GUEST_QA.map((item, idx) => {
-              const isOpen = openQa === idx;
-              const answerId = `guest-qa-answer-${idx}`;
-              return (
-                <div key={item.q}>
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-controls={answerId}
-                    onClick={() => setOpenQa(isOpen ? null : idx)}
-                    className={`w-full min-h-11 py-4 ${
-                      idx === 0 ? "md:pt-0" : ""
-                    } flex items-start justify-between gap-4 text-left group cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC56E6] focus-visible:text-white`}
-                  >
-                    <span className="text-sm sm:text-base font-medium text-white/90 group-hover:text-white transition-colors">
-                      {item.q}
-                    </span>
-                    <span className="mt-0.5 text-white/55 group-hover:text-white transition-colors flex-shrink-0">
-                      {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    </span>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        id={answerId}
-                        initial={prefersReducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                        transition={{ duration: 0.18 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="pb-4 pr-8 text-sm text-white/65 font-light leading-relaxed">
-                          {item.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
+          <GuestQaList />
         </section>
 
         {/* Closing note, warm sign-off, and tracked secondary CTA */}
